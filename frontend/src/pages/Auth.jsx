@@ -159,6 +159,18 @@ const Auth = () => {
               {!isLogin && (
                 <p className="text-xs text-slate-500 mt-1.5">Minimum 6 characters</p>
               )}
+              {isLogin && (
+                <div className="mt-2 text-right">
+                  <button
+                    type="button"
+                    data-testid="forgot-password-link"
+                    onClick={() => navigate("/forgot-password")}
+                    className="text-sm text-teal-400 hover:text-teal-300 transition-colors"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
             </div>
 
             <button
