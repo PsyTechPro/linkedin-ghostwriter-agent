@@ -99,6 +99,43 @@ const ForgotPassword = () => {
               <p className="text-slate-400 mb-6">
                 If an account exists for <span className="text-white">{email}</span>, you'll receive a password reset link shortly.
               </p>
+              
+              {/* Dev/Preview mode reset link */}
+              {devResetUrl && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-6 text-left">
+                  <p className="text-amber-400 text-xs font-medium mb-3 flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                    Shown in preview mode only
+                  </p>
+                  
+                  <button
+                    data-testid="open-reset-link-btn"
+                    onClick={openResetLink}
+                    className="btn-primary w-full py-2.5 mb-3 flex items-center justify-center gap-2 text-sm"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open reset link
+                  </button>
+                  
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={devResetUrl}
+                      readOnly
+                      className="input-ghost text-xs pr-12 font-mono"
+                      data-testid="reset-url-input"
+                    />
+                    <button
+                      onClick={copyToClipboard}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                      title="Copy to clipboard"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              
               <p className="text-slate-500 text-sm mb-6">
                 The link will expire in 30 minutes. If you don't see the email, check your spam folder.
               </p>
