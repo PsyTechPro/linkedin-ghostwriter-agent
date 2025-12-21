@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, MessageSquare, Calendar, ArrowRight, Check } from "lucide-react";
+import { Sparkles, MessageSquare, Calendar, ArrowRight, Check, Play } from "lucide-react";
 import { useAuth } from "../App";
 
 const Landing = () => {
