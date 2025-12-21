@@ -9,6 +9,83 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useAuth, API } from "../App";
 
+// Helper function to safely render profile values (handles objects, arrays, strings)
+const renderProfileValue = (value) => {
+  if (value === null || value === undefined) {
+    return <span className="text-slate-500 italic">Not specified</span>;
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+  if (typeof value === 'object') {
+    // Convert object to readable format
+    return (
+      <ul className="list-disc list-inside space-y-1 text-sm">
+        {Object.entries(value).map(([key, val]) => (
+          <li key={key}>
+            <span className="text-slate-400">{key.replace(/_/g, ' ')}:</span>{' '}
+            <span className="text-white">
+              {typeof val === 'object' ? JSON.stringify(val) : String(val)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return String(value);
+};
+
+// Helper to render themes (can be array or string)
+const renderThemes = (themes) => {
+  if (!themes) return null;
+  
+  let themeList = [];
+  if (Array.isArray(themes)) {
+    themeList = themes;
+  } else if (typeof themes === 'string') {
+    themeList = themes.split(',').map(t => t.trim());
+  } else if (typeof themes === 'object') {
+    themeList = Object.values(themes).flat().filter(t => typeof t === 'string');
+  }
+  
+  if (themeList.length === 0) return null;
+  
+  return (
+    <div className="flex flex-wrap gap-2">
+      {themeList.map((theme, i) => (
+        <span key={i} className="tag-chip">{String(theme)}</span>
+      ))}
+    </div>
+  );
+};
+
+// Helper to render list items (dos/donts)
+const renderListItems = (items) => {
+  if (!items) return null;
+  
+  let itemList = [];
+  if (Array.isArray(items)) {
+    itemList = items;
+  } else if (typeof items === 'string') {
+    itemList = items.split(',').map(t => t.trim());
+  } else if (typeof items === 'object') {
+    itemList = Object.values(items).flat().filter(t => typeof t === 'string');
+  }
+  
+  if (itemList.length === 0) return null;
+  
+  return (
+    <ul className="list-disc list-inside space-y-1 text-sm text-white">
+      {itemList.map((item, i) => (
+        <li key={i}>{String(item)}</li>
+      ))}
+    </ul>
+  );
+};
+
 const Settings = () => {
   const navigate = useNavigate();
   const { user, token, logout, voiceProfile, updateVoiceProfile } = useAuth();
