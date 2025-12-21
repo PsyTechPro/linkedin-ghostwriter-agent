@@ -1,0 +1,119 @@
+{
+  "identity": {
+    "name": "LinkedIn Ghostwriter Agent",
+    "persona": "The Midnight Ghostwriter",
+    "vibe": "Premium, Stealth, Precision, Authority",
+    "emotional_tone": "Quiet Confidence"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Outfit, sans-serif",
+      "body": "Plus Jakarta Sans, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "headings": "600 (SemiBold) or 500 (Medium)",
+      "body": "400 (Regular)",
+      "bold": "700 (Bold)"
+    },
+    "scale": {
+      "h1": "text-5xl md:text-7xl tracking-tight leading-tight",
+      "h2": "text-3xl md:text-5xl tracking-tight",
+      "h3": "text-2xl md:text-3xl tracking-normal",
+      "body_lg": "text-lg leading-relaxed",
+      "body_base": "text-base leading-relaxed text-slate-400",
+      "caption": "text-sm text-slate-500 uppercase tracking-widest"
+    },
+    "installation": "Import fonts via Google Fonts in index.css: @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');"
+  },
+  "colors": {
+    "palette": {
+      "background": "#0B0F12",
+      "surface": "#161A1D",
+      "surface_highlight": "#1E2329",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "primary": "#14B8A6",
+      "primary_gradient": "linear-gradient(135deg, #14B8A6 0%, #0EA5E9 100%)",
+      "text_primary": "#F8FAFC",
+      "text_secondary": "#94A3B8",
+      "text_muted": "#64748B",
+      "accent_glow": "rgba(20, 184, 166, 0.5)"
+    },
+    "tailwind_config_extension": {
+      "colors": {
+        "ghost": {
+          "bg": "#0B0F12",
+          "surface": "#161A1D",
+          "border": "#27272A",
+          "text": "#F8FAFC",
+          "muted": "#94A3B8"
+        },
+        "brand": {
+          "teal": "#14B8A6",
+          "blue": "#0EA5E9"
+        }
+      }
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-black/40 border border-white/10",
+    "gradients": {
+      "hero_glow": "bg-gradient-to-b from-teal-500/20 via-blue-500/5 to-transparent",
+      "card_hover": "hover:bg-white/5 transition-colors duration-300"
+    },
+    "shadows": {
+      "card": "shadow-[0_8px_32px_rgba(0,0,0,0.2)]",
+      "glow": "shadow-[0_0_20px_rgba(20,184,166,0.3)]"
+    },
+    "borders": "border border-white/10"
+  },
+  "layout_strategy": {
+    "landing_page": {
+      "grid": "Tetris Grid (Mode A)",
+      "spacing": "Generous (gap-8 to gap-16)",
+      "container": "max-w-7xl mx-auto px-6"
+    },
+    "dashboard": {
+      "grid": "Control Room Grid (Mode B)",
+      "sidebar": "Fixed left, w-64, glassmorphism",
+      "main_content": "ml-64 p-8"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-full px-8 py-3 font-medium hover:shadow-[0_0_20px_rgba(20,184,166,0.4)] transition-all transform hover:-translate-y-0.5",
+      "secondary": "bg-white/5 border border-white/10 text-white rounded-full px-8 py-3 hover:bg-white/10 transition-all",
+      "ghost": "text-slate-400 hover:text-white transition-colors"
+    },
+    "cards": {
+      "base": "bg-[#161A1D] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-colors",
+      "glass": "backdrop-blur-md bg-black/30 border border-white/10 rounded-2xl p-6"
+    },
+    "inputs": {
+      "base": "bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-slate-600 focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/50 transition-all outline-none"
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1746470427686-4c3551f3d689?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "workspace_vibe": "https://images.unsplash.com/photo-1602126282340-9f597c2f31ab?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "minimal_desk": "https://images.unsplash.com/photo-1580315362297-5be36f0de025?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "icons": "Lucide React (default)"
+  },
+  "motion": {
+    "library": "framer-motion",
+    "transitions": {
+      "page": "initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4, ease: 'easeOut' }}",
+      "hover": "whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}"
+    }
+  },
+  "universal_guidelines": [
+    "DO NOT use generic 'slate-900' for backgrounds. Use the custom '#0B0F12'.",
+    "Always add 'data-testid' to interactive elements.",
+    "Use 'sonner' for toasts.",
+    "Ensure all text has sufficient contrast (APCA standards).",
+    "Avoid gradients on text unless it's a very large headline.",
+    "Use 'Lenis' for smooth scrolling on the landing page."
+  ]
+}
