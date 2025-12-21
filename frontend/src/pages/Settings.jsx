@@ -227,28 +227,42 @@ const Settings = () => {
               <div className="grid gap-4">
                 <div className="bg-black/20 rounded-lg p-4">
                   <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Tone</p>
-                  <p className="text-white">{extractedProfile.tone}</p>
+                  <div className="text-white">{renderProfileValue(extractedProfile?.tone)}</div>
                 </div>
                 <div className="bg-black/20 rounded-lg p-4">
                   <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Structure</p>
-                  <p className="text-white">{extractedProfile.structure}</p>
+                  <div className="text-white">{renderProfileValue(extractedProfile?.structure)}</div>
                 </div>
                 <div className="bg-black/20 rounded-lg p-4">
                   <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Hook Style</p>
-                  <p className="text-white">{extractedProfile.hook_style}</p>
+                  <div className="text-white">{renderProfileValue(extractedProfile?.hook_style)}</div>
                 </div>
                 <div className="bg-black/20 rounded-lg p-4">
                   <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">CTA Style</p>
-                  <p className="text-white">{extractedProfile.cta_style}</p>
+                  <div className="text-white">{renderProfileValue(extractedProfile?.cta_style)}</div>
                 </div>
-                {extractedProfile.themes && (
+                {extractedProfile?.themes && (
                   <div className="bg-black/20 rounded-lg p-4">
                     <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Themes</p>
-                    <div className="flex flex-wrap gap-2">
-                      {extractedProfile.themes.map((theme, i) => (
-                        <span key={i} className="tag-chip">{theme}</span>
-                      ))}
-                    </div>
+                    {renderThemes(extractedProfile.themes)}
+                  </div>
+                )}
+                {extractedProfile?.dos && (
+                  <div className="bg-black/20 rounded-lg p-4">
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Do's</p>
+                    {renderListItems(extractedProfile.dos)}
+                  </div>
+                )}
+                {extractedProfile?.donts && (
+                  <div className="bg-black/20 rounded-lg p-4">
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Don'ts</p>
+                    {renderListItems(extractedProfile.donts)}
+                  </div>
+                )}
+                {extractedProfile?.summary && (
+                  <div className="bg-black/20 rounded-lg p-4">
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Summary</p>
+                    <p className="text-white text-sm">{renderProfileValue(extractedProfile.summary)}</p>
                   </div>
                 )}
               </div>
