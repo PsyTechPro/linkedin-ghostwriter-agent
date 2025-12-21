@@ -100,6 +100,32 @@ class DraftPostUpdate(BaseModel):
     content: Optional[str] = None
     is_favorite: Optional[bool] = None
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+# ============== RATE LIMITING ==============
+
+# Simple in-memory rate limiter for forgot password
+rate_limit_store: Dict[str, List[float]] = defaultdict(list)
+RATE_LIMIT_WINDOW = 300  # 5 minutes
+RATE_LIMIT_MAX_REQUESTS = 3  # max 3 requests per window
+
+def check_rate_limit(identifier: str) -> bool:
+    """Returns True if request is allowed, False if rate limited"""
+    now = time.time()
+    # Clean old entries
+    rate_limit_store[identifier] = [t for t in rate_limit_store[identifier] if now - t < RATE_LIMIT_WINDOW]
+    # Check limit
+    if len(rate_limit_store[identifier]) >= RATE_LIMIT_MAX_REQUESTS:
+        return False
+    # Add current request
+    rate_limit_store[identifier].append(now)
+    return True
+
 # ============== AUTH HELPERS ==============
 
 def hash_password(password: str) -> str:
