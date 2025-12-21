@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import DemoMode from "./pages/DemoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
@@ -27,6 +28,8 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
   const [voiceProfile, setVoiceProfile] = useState(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [demoProfile, setDemoProfile] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -61,6 +64,7 @@ const AuthProvider = ({ children }) => {
     localStorage.setItem("token", res.data.access_token);
     setToken(res.data.access_token);
     setUser(res.data.user);
+    setIsDemoMode(false);
     return res.data;
   };
 
@@ -69,6 +73,7 @@ const AuthProvider = ({ children }) => {
     localStorage.setItem("token", res.data.access_token);
     setToken(res.data.access_token);
     setUser(res.data.user);
+    setIsDemoMode(false);
     return res.data;
   };
 
@@ -77,6 +82,27 @@ const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     setVoiceProfile(null);
+    setIsDemoMode(false);
+    setDemoProfile(null);
+  };
+
+  const enterDemoMode = async () => {
+    try {
+      const res = await axios.get(`${API}/demo/sample-profile`);
+      setDemoProfile(res.data.extracted_profile);
+      setIsDemoMode(true);
+      setUser({ name: "Demo User", email: "demo@example.com", id: "demo" });
+      return true;
+    } catch (e) {
+      console.error("Failed to enter demo mode:", e);
+      return false;
+    }
+  };
+
+  const exitDemoMode = () => {
+    setIsDemoMode(false);
+    setDemoProfile(null);
+    setUser(null);
   };
 
   const updateVoiceProfile = (profile) => {
@@ -86,7 +112,8 @@ const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{ 
       user, token, loading, login, register, logout, 
-      voiceProfile, updateVoiceProfile, isAuthenticated: !!user 
+      voiceProfile, updateVoiceProfile, isAuthenticated: !!user,
+      isDemoMode, demoProfile, enterDemoMode, exitDemoMode
     }}>
       {children}
     </AuthContext.Provider>
@@ -95,7 +122,7 @@ const AuthProvider = ({ children }) => {
 
 // Protected Route
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, isDemoMode } = useAuth();
   
   if (loading) {
     return (
@@ -105,7 +132,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
   
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isDemoMode) {
     return <Navigate to="/auth" replace />;
   }
   
@@ -120,6 +147,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/demo" element={<DemoMode />} />
             <Route path="/onboarding" element={
               <ProtectedRoute>
                 <Onboarding />
