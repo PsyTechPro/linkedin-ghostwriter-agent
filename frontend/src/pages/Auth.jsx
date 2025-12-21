@@ -78,31 +78,42 @@ const Auth = () => {
 
         {/* Card */}
         <div className="card-ghost p-8">
+          {/* Helper text to prevent Google login confusion */}
+          <div className="bg-slate-800/50 rounded-lg px-4 py-3 mb-6 border border-slate-700/50">
+            <p className="text-slate-400 text-sm">
+              {isLogin 
+                ? "Sign in with your Ghostwriter account credentials."
+                : "New here? Create a free account below — no Google login required."
+              }
+            </p>
+          </div>
+
           <h1 className="text-2xl font-bold text-white font-['Outfit'] mb-2">
             {isLogin ? "Welcome back" : "Create your account"}
           </h1>
-          <p className="text-slate-400 mb-8">
+          <p className="text-slate-400 mb-6">
             {isLogin 
               ? "Sign in to access your drafts and voice profile" 
               : "Start generating LinkedIn posts in your voice"
             }
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
             {!isLogin && (
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Your name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input
                     data-testid="auth-name-input"
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="input-ghost pl-11"
+                    className="input-ghost pl-12"
                     placeholder="John Doe"
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -113,36 +124,41 @@ const Auth = () => {
                 Email address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <input
                   data-testid="auth-email-input"
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="input-ghost pl-11"
+                  className="input-ghost pl-12"
                   placeholder="you@example.com"
                   required
+                  autoComplete="off"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Password
+                {isLogin ? "Password" : "Create a password"}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <input
                   data-testid="auth-password-input"
                   type="password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="input-ghost pl-11"
+                  className="input-ghost pl-12"
                   placeholder="••••••••"
                   required
                   minLength={6}
+                  autoComplete="new-password"
                 />
               </div>
+              {!isLogin && (
+                <p className="text-xs text-slate-500 mt-1.5">Minimum 6 characters</p>
+              )}
             </div>
 
             <button
@@ -157,22 +173,36 @@ const Auth = () => {
                   {isLogin ? "Signing in..." : "Creating account..."}
                 </>
               ) : (
-                isLogin ? "Sign in" : "Create account"
+                isLogin ? "Sign in" : "Create free account"
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <button
-              data-testid="auth-toggle-btn"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-slate-400 hover:text-white transition-colors text-sm"
-            >
-              {isLogin 
-                ? "Don't have an account? Sign up" 
-                : "Already have an account? Sign in"
-              }
-            </button>
+          {/* Toggle between sign in and sign up */}
+          <div className="mt-6 pt-6 border-t border-white/10">
+            {isLogin ? (
+              <div className="text-center">
+                <p className="text-slate-500 text-sm mb-2">New to Ghostwriter?</p>
+                <button
+                  data-testid="auth-toggle-btn"
+                  onClick={() => setIsLogin(false)}
+                  className="text-teal-400 hover:text-teal-300 transition-colors text-sm font-medium"
+                >
+                  Create a free account →
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-slate-500 text-sm mb-2">Already have an account?</p>
+                <button
+                  data-testid="auth-toggle-btn"
+                  onClick={() => setIsLogin(true)}
+                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                >
+                  Sign in instead
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Demo Mode Option */}
