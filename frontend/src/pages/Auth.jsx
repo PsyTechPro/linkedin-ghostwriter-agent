@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Mail, Lock, User, ArrowLeft, Loader2 } from "lucide-react";
+import { Sparkles, Mail, Lock, User, ArrowLeft, Loader2, Play } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../App";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { login, register, isAuthenticated, voiceProfile } = useAuth();
+  const { login, register, isAuthenticated, voiceProfile, enterDemoMode } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -171,6 +172,35 @@ const Auth = () => {
                 ? "Don't have an account? Sign up" 
                 : "Already have an account? Sign in"
               }
+            </button>
+          </div>
+
+          {/* Demo Mode Option */}
+          <div className="mt-8 pt-6 border-t border-white/10">
+            <p className="text-center text-slate-500 text-sm mb-4">
+              Just want to explore?
+            </p>
+            <button
+              data-testid="auth-demo-btn"
+              onClick={async () => {
+                setDemoLoading(true);
+                const success = await enterDemoMode();
+                if (success) {
+                  navigate("/demo");
+                } else {
+                  toast.error("Failed to start demo");
+                }
+                setDemoLoading(false);
+              }}
+              disabled={demoLoading}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-slate-400 hover:text-teal-400 hover:bg-white/5 transition-all text-sm border border-white/10"
+            >
+              {demoLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+              Try demo without signup
             </button>
           </div>
         </div>
