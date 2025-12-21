@@ -138,6 +138,14 @@ const DemoMode = () => {
             <Zap className="w-5 h-5" />
             Generate Posts
           </button>
+          <button
+            data-testid="demo-nav-train"
+            onClick={() => navigate("/onboarding")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
+          >
+            <Sparkles className="w-5 h-5" />
+            Train Your Voice
+          </button>
         </nav>
 
         {/* Actions */}
