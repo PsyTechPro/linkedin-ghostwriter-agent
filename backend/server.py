@@ -142,6 +142,60 @@ def create_token(user_id: str) -> str:
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
+def generate_reset_token() -> tuple[str, str]:
+    """Generate a secure reset token and its hash"""
+    token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    return token, token_hash
+
+def hash_reset_token(token: str) -> str:
+    """Hash a reset token for comparison"""
+    return hashlib.sha256(token.encode()).hexdigest()
+
+async def send_reset_email(email: str, reset_url: str):
+    """Send password reset email. In production, integrate with email service."""
+    # Log the reset URL for demo/testing purposes
+    logger.info(f"PASSWORD RESET EMAIL for {email}")
+    logger.info(f"Reset URL: {reset_url}")
+    
+    # Check if Resend API key is available
+    resend_key = os.environ.get('RESEND_API_KEY')
+    if resend_key:
+        try:
+            import httpx
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://api.resend.com/emails",
+                    headers={
+                        "Authorization": f"Bearer {resend_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "from": "LinkedIn Ghostwriter <noreply@resend.dev>",
+                        "to": [email],
+                        "subject": "Reset your password - LinkedIn Ghostwriter Agent",
+                        "html": f"""
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                            <h2 style="color: #14B8A6;">Reset Your Password</h2>
+                            <p>You requested to reset your password for LinkedIn Ghostwriter Agent.</p>
+                            <p>Click the button below to set a new password. This link expires in 30 minutes.</p>
+                            <a href="{reset_url}" style="display: inline-block; background: linear-gradient(135deg, #14B8A6, #0EA5E9); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 20px 0;">Reset Password</a>
+                            <p style="color: #666; font-size: 14px;">If you didn't request this, you can safely ignore this email.</p>
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                            <p style="color: #999; font-size: 12px;">LinkedIn Ghostwriter Agent</p>
+                        </div>
+                        """
+                    }
+                )
+                if response.status_code == 200:
+                    logger.info(f"Reset email sent successfully to {email}")
+                else:
+                    logger.warning(f"Failed to send email: {response.text}")
+        except Exception as e:
+            logger.error(f"Email sending error: {e}")
+    else:
+        logger.warning("RESEND_API_KEY not configured - email not sent (check logs for reset URL)")
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
