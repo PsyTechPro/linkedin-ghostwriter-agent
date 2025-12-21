@@ -60,7 +60,7 @@ const Settings = () => {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="font-semibold text-lg text-white font-['Outfit']">Ghostwriter</span>
+          <span className="font-semibold text-lg text-white font-['Outfit']">LinkedIn Ghostwriter Agent</span>
         </div>
 
         {/* Nav */}

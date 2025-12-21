@@ -72,7 +72,7 @@ const Auth = () => {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <span className="font-semibold text-xl text-white font-['Outfit']">Ghostwriter</span>
+          <span className="font-semibold text-xl text-white font-['Outfit']">LinkedIn Ghostwriter Agent</span>
         </div>
 
         {/* Card */}
