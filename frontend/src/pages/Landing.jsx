@@ -160,6 +160,23 @@ Speed is a feature.`;
                 See example
               </motion.a>
             </div>
+
+            {/* Demo CTA */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-6"
+            >
+              <button
+                data-testid="hero-demo-btn"
+                onClick={() => navigate("/demo")}
+                className="text-slate-400 hover:text-teal-400 transition-colors text-sm flex items-center gap-2 mx-auto"
+              >
+                <Play className="w-4 h-4" />
+                Try demo without signup
+              </button>
+            </motion.div>
           </motion.div>
         </div>
       </section>
