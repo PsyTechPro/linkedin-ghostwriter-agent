@@ -9,6 +9,26 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useAuth, API } from "../App";
 
+// Helper function to safely render profile values (handles objects, arrays, strings)
+const renderProfileValue = (value) => {
+  if (value === null || value === undefined) {
+    return "Not specified";
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+  if (typeof value === 'object') {
+    // For objects, join the values
+    const values = Object.values(value).filter(v => v);
+    if (values.length === 0) return "Not specified";
+    return values.map(v => typeof v === 'object' ? JSON.stringify(v) : String(v)).join(', ');
+  }
+  return String(value);
+};
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const { token, voiceProfile, updateVoiceProfile, isDemoMode } = useAuth();
