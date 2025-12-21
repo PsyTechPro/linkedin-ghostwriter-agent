@@ -11,7 +11,7 @@ import { useAuth, API } from "../App";
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { token, voiceProfile, updateVoiceProfile } = useAuth();
+  const { token, voiceProfile, updateVoiceProfile, isDemoMode } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [samplePosts, setSamplePosts] = useState("");
@@ -48,13 +48,19 @@ const Onboarding = () => {
 
     setLoading(true);
     try {
+      // Use demo endpoint if in demo mode, otherwise use authenticated endpoint
+      const endpoint = isDemoMode ? `${API}/demo/analyze-voice` : `${API}/voice-profile/analyze`;
+      const headers = isDemoMode ? {} : { Authorization: `Bearer ${token}` };
+      
       const res = await axios.post(
-        `${API}/voice-profile/analyze`,
+        endpoint,
         { raw_samples: samplePosts, settings },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers }
       );
       setExtractedProfile(res.data.extracted_profile);
-      updateVoiceProfile(res.data);
+      if (!isDemoMode) {
+        updateVoiceProfile(res.data);
+      }
       toast.success("Voice profile created!");
       setStep(2);
     } catch (e) {
@@ -68,11 +74,13 @@ const Onboarding = () => {
   const saveSettings = async () => {
     setLoading(true);
     try {
-      await axios.put(
-        `${API}/voice-profile/settings`,
-        settings,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (!isDemoMode) {
+        await axios.put(
+          `${API}/voice-profile/settings`,
+          settings,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
       toast.success("Settings saved!");
       setStep(3);
     } catch (e) {
@@ -91,15 +99,19 @@ const Onboarding = () => {
 
     setGenerating(true);
     try {
+      // Use demo endpoint if in demo mode
+      const endpoint = isDemoMode ? `${API}/demo/generate` : `${API}/posts/generate`;
+      const headers = isDemoMode ? {} : { Authorization: `Bearer ${token}` };
+      
       const res = await axios.post(
-        `${API}/posts/generate`,
+        endpoint,
         { topic, audience: audience || null },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers }
       );
       setGeneratedPosts(res.data);
       toast.success("5 posts generated!");
-      // Navigate to dashboard after short delay
-      setTimeout(() => navigate("/dashboard"), 1500);
+      // Navigate to appropriate page after short delay
+      setTimeout(() => navigate(isDemoMode ? "/demo" : "/dashboard"), 1500);
     } catch (e) {
       toast.error(e.response?.data?.detail || "Failed to generate posts");
     } finally {
