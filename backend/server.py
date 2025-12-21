@@ -259,6 +259,10 @@ async def forgot_password(data: ForgotPasswordRequest, request: Request):
     client_ip = request.client.host if request.client else "unknown"
     rate_limit_key = f"forgot:{client_ip}:{data.email}"
     
+    # Detect if we're in preview/dev mode
+    frontend_url = os.environ.get('FRONTEND_URL', 'https://linkedin-ghost-2.preview.emergentagent.com')
+    is_preview_mode = 'preview' in frontend_url or 'localhost' in frontend_url or os.environ.get('DEV_MODE', '').lower() == 'true'
+    
     # Check rate limit
     if not check_rate_limit(rate_limit_key):
         # Still return success to not reveal rate limiting
@@ -266,6 +270,7 @@ async def forgot_password(data: ForgotPasswordRequest, request: Request):
     
     # Check if user exists (but don't reveal this to the client)
     user = await db.users.find_one({"email": data.email})
+    reset_url = None
     
     if user:
         # Generate reset token
@@ -289,7 +294,6 @@ async def forgot_password(data: ForgotPasswordRequest, request: Request):
         await db.password_resets.insert_one(reset_doc)
         
         # Build reset URL
-        frontend_url = os.environ.get('FRONTEND_URL', 'https://linkedin-ghost-2.preview.emergentagent.com')
         reset_url = f"{frontend_url}/reset-password?token={token}"
         
         # Send email (async)
@@ -299,8 +303,15 @@ async def forgot_password(data: ForgotPasswordRequest, request: Request):
     else:
         logger.info(f"Password reset requested for non-existent email: {data.email}")
     
-    # Always return success to prevent email enumeration
-    return {"message": "If an account exists with this email, you will receive a password reset link."}
+    # Build response
+    response = {"message": "If an account exists with this email, you will receive a password reset link."}
+    
+    # In preview/dev mode, include the reset URL for testing
+    if is_preview_mode and reset_url:
+        response["devResetUrl"] = reset_url
+        logger.info(f"[DEV MODE] Reset URL included in response for {data.email}")
+    
+    return response
 
 @api_router.post("/auth/reset-password")
 async def reset_password(data: ResetPasswordRequest):
