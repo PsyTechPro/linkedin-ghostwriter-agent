@@ -252,6 +252,126 @@ async def login(credentials: UserLogin):
 async def get_me(user: dict = Depends(get_current_user)):
     return UserResponse(**user)
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest, request: Request):
+    """Request a password reset email"""
+    # Get client IP for rate limiting
+    client_ip = request.client.host if request.client else "unknown"
+    rate_limit_key = f"forgot:{client_ip}:{data.email}"
+    
+    # Check rate limit
+    if not check_rate_limit(rate_limit_key):
+        # Still return success to not reveal rate limiting
+        return {"message": "If an account exists with this email, you will receive a password reset link."}
+    
+    # Check if user exists (but don't reveal this to the client)
+    user = await db.users.find_one({"email": data.email})
+    
+    if user:
+        # Generate reset token
+        token, token_hash = generate_reset_token()
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=30)
+        
+        # Store reset token in database
+        reset_doc = {
+            "id": str(uuid.uuid4()),
+            "user_id": user["id"],
+            "token_hash": token_hash,
+            "expires_at": expires_at.isoformat(),
+            "used": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Remove any existing reset tokens for this user
+        await db.password_resets.delete_many({"user_id": user["id"]})
+        
+        # Insert new token
+        await db.password_resets.insert_one(reset_doc)
+        
+        # Build reset URL
+        frontend_url = os.environ.get('FRONTEND_URL', 'https://linkedin-ghost-2.preview.emergentagent.com')
+        reset_url = f"{frontend_url}/reset-password?token={token}"
+        
+        # Send email (async)
+        await send_reset_email(data.email, reset_url)
+        
+        logger.info(f"Password reset requested for {data.email}")
+    else:
+        logger.info(f"Password reset requested for non-existent email: {data.email}")
+    
+    # Always return success to prevent email enumeration
+    return {"message": "If an account exists with this email, you will receive a password reset link."}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: ResetPasswordRequest):
+    """Reset password using token"""
+    # Validate password length
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Hash the provided token
+    token_hash = hash_reset_token(data.token)
+    
+    # Find the reset token
+    reset_doc = await db.password_resets.find_one({
+        "token_hash": token_hash,
+        "used": False
+    })
+    
+    if not reset_doc:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset link")
+    
+    # Check if token is expired
+    expires_at = datetime.fromisoformat(reset_doc["expires_at"].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) > expires_at:
+        # Mark as used to prevent reuse
+        await db.password_resets.update_one(
+            {"id": reset_doc["id"]},
+            {"$set": {"used": True}}
+        )
+        raise HTTPException(status_code=400, detail="Reset link has expired. Please request a new one.")
+    
+    # Get the user
+    user = await db.users.find_one({"id": reset_doc["user_id"]})
+    if not user:
+        raise HTTPException(status_code=400, detail="User not found")
+    
+    # Update password
+    new_password_hash = hash_password(data.new_password)
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"password": new_password_hash}}
+    )
+    
+    # Mark token as used
+    await db.password_resets.update_one(
+        {"id": reset_doc["id"]},
+        {"$set": {"used": True}}
+    )
+    
+    logger.info(f"Password reset successful for user {user['id']}")
+    
+    return {"message": "Password has been reset successfully. You can now sign in with your new password."}
+
+@api_router.get("/auth/verify-reset-token")
+async def verify_reset_token(token: str):
+    """Verify if a reset token is valid (used by frontend before showing reset form)"""
+    token_hash = hash_reset_token(token)
+    
+    reset_doc = await db.password_resets.find_one({
+        "token_hash": token_hash,
+        "used": False
+    })
+    
+    if not reset_doc:
+        return {"valid": False, "message": "Invalid or expired reset link"}
+    
+    expires_at = datetime.fromisoformat(reset_doc["expires_at"].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) > expires_at:
+        return {"valid": False, "message": "Reset link has expired"}
+    
+    return {"valid": True}
+
 # ============== VOICE PROFILE ENDPOINTS ==============
 
 @api_router.post("/voice-profile/analyze", response_model=VoiceProfileResponse)
