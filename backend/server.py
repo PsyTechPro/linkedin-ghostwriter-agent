@@ -538,7 +538,7 @@ Write a single LinkedIn post."""
     updated = await db.draft_posts.find_one({"id": post_id}, {"_id": 0})
     return DraftPostResponse(**updated)
 
-# ============== DEMO DATA ==============
+# ============== DEMO ENDPOINTS ==============
 
 @api_router.get("/demo/sample-profile")
 async def get_sample_profile():
@@ -613,6 +613,120 @@ Results > rituals.""",
             "summary": "Direct, no-BS voice that challenges conventional thinking while remaining approachable"
         }
     }
+
+@api_router.post("/demo/generate")
+async def demo_generate_posts(request: GeneratePostsRequest):
+    """Generate posts in demo mode without authentication"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="LLM API key not configured")
+    
+    # Use sample voice profile
+    extracted = {
+        "tone": "Direct, confident, conversational",
+        "structure": "Short paragraphs, generous line breaks, often one-liners",
+        "hook_style": "Bold statement or contrarian opener",
+        "cta_style": "Soft engagement question",
+        "themes": ["Leadership", "Remote work", "Productivity", "Communication"],
+        "dos": ["Use line breaks liberally", "Challenge conventional wisdom", "End with questions"],
+        "donts": ["No corporate jargon", "Avoid long paragraphs", "No excessive hashtags"]
+    }
+    
+    settings = {
+        "post_length": "medium",
+        "emoji": "light",
+        "hashtags": "1-3",
+        "cta": "soft",
+        "risk_filter": "balanced"
+    }
+    
+    system_prompt = f"""You are a LinkedIn ghostwriter. Write posts that match this voice profile:
+
+VOICE PROFILE:
+- Tone: {extracted.get('tone', 'professional')}
+- Structure: {extracted.get('structure', 'short paragraphs with line breaks')}
+- Hook style: {extracted.get('hook_style', 'engaging opener')}
+- CTA style: {extracted.get('cta_style', 'soft')}
+- Themes: {', '.join(extracted.get('themes', ['business']))}
+- Do: {', '.join(extracted.get('dos', ['Be authentic']))}
+- Avoid: {', '.join(extracted.get('donts', ['Corporate jargon']))}
+
+GUARDRAILS:
+- Posts should be 150-250 words
+- Use 1-2 emojis sparingly, only if natural
+- Include 1-3 relevant hashtags at the end
+- End with a soft engagement question or thought-provoking statement
+- Share thoughtful opinions but stay professional
+
+FORMAT RULES:
+- Write like a real LinkedIn post with proper line breaks (use double newlines between paragraphs)
+- Never write essay-style long paragraphs
+- Each post must be distinct and offer unique value"""
+
+    chat = LlmChat(
+        api_key=api_key,
+        session_id=f"demo-gen-{uuid.uuid4()}",
+        system_message=system_prompt
+    ).with_model("openai", "gpt-5.1")
+    
+    audience_context = f"Target audience: {request.audience}" if request.audience else "Target audience: LinkedIn professionals"
+    
+    generation_prompt = f"""Write 5 LinkedIn posts about: {request.topic}
+{audience_context}
+
+Generate 5 distinct posts with different angles:
+1. PRACTICAL: Actionable insight or tip
+2. STORY: Personal story or lesson learned  
+3. CONTRARIAN: Challenge a common belief
+4. FRAMEWORK: A checklist, framework, or step-by-step
+5. PUNCHY: Short, bold observation (under 100 words)
+
+Return ONLY a JSON array with 5 objects, each having:
+- "content": the full post text with proper line breaks (use \\n\\n for paragraph breaks)
+- "tag": one of ["Practical", "Story", "Contrarian", "Framework", "Punchy"]"""
+
+    try:
+        response = await chat.send_message(UserMessage(text=generation_prompt))
+        
+        import json
+        json_start = response.find('[')
+        json_end = response.rfind(']') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            posts_data = json.loads(response[json_start:json_end])
+        else:
+            raise ValueError("No JSON array found")
+            
+    except Exception as e:
+        logger.error(f"Demo generation error: {e}")
+        posts_data = [
+            {"content": f"Here's what I've learned about {request.topic}:\n\nThe key is consistency over perfection.\n\nEvery expert was once a beginner.\n\nWhat's stopping you from starting today?", "tag": "Practical"},
+            {"content": f"A story about {request.topic}:\n\nLast year, I failed spectacularly.\n\nBut that failure taught me everything I know today.\n\nThe lesson? Fail fast. Learn faster.", "tag": "Story"},
+            {"content": f"Unpopular opinion about {request.topic}:\n\nMost advice you'll hear is wrong.\n\nHere's the truth nobody talks about:\n\nSimplicity beats complexity. Every time.", "tag": "Contrarian"},
+            {"content": f"My 3-step framework for {request.topic}:\n\n1. Start small\n2. Stay consistent\n3. Iterate fast\n\nSimple but effective.\n\nWhich step do you struggle with most?", "tag": "Framework"},
+            {"content": f"{request.topic.title()} isn't complicated.\n\nWe make it complicated.\n\nStop overthinking.\n\nStart doing.", "tag": "Punchy"}
+        ]
+    
+    # Return posts without saving (demo mode)
+    now = datetime.now(timezone.utc).isoformat()
+    demo_posts = []
+    
+    for i, post_data in enumerate(posts_data[:5]):
+        demo_posts.append({
+            "id": f"demo-{uuid.uuid4()}",
+            "user_id": "demo",
+            "topic": request.topic,
+            "audience": request.audience,
+            "content": post_data.get("content", ""),
+            "tags": [post_data.get("tag", "Practical")],
+            "is_favorite": False,
+            "created_at": now,
+            "updated_at": now
+        })
+    
+    return demo_posts
 
 # ============== ROOT & HEALTH ==============
 
