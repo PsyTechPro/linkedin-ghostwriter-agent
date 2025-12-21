@@ -728,6 +728,196 @@ Return ONLY a JSON array with 5 objects, each having:
     
     return demo_posts
 
+class DemoVoiceAnalyzeRequest(BaseModel):
+    raw_samples: str
+
+@api_router.post("/demo/analyze-voice")
+async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest):
+    """Analyze voice in demo mode without authentication"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="LLM API key not configured")
+    
+    if not data.raw_samples or len(data.raw_samples) < 100:
+        raise HTTPException(status_code=400, detail="Please provide at least 100 characters of sample posts")
+    
+    # Analyze voice using GPT-5.1
+    chat = LlmChat(
+        api_key=api_key,
+        session_id=f"demo-voice-analysis-{uuid.uuid4()}",
+        system_message="""You are a LinkedIn writing style analyst. Analyze the provided sample posts and extract:
+1. Tone (professional, casual, inspirational, provocative, etc.)
+2. Structure patterns (how they open, format paragraphs, use line breaks)
+3. Hook style (question, statement, statistic, story opener)
+4. CTA style (none, soft ask, direct ask)
+5. Common themes and topics
+6. Do's (things they consistently do)
+7. Don'ts (things they avoid)
+
+Return a JSON object with these fields: tone, structure, hook_style, cta_style, themes, dos, donts, summary"""
+    ).with_model("openai", "gpt-5.1")
+    
+    try:
+        analysis_prompt = f"""Analyze these LinkedIn posts and extract the author's writing style:
+
+{data.raw_samples}
+
+Return ONLY a valid JSON object with the analysis."""
+        
+        response = await chat.send_message(UserMessage(text=analysis_prompt))
+        
+        # Parse JSON from response
+        import json
+        try:
+            json_start = response.find('{')
+            json_end = response.rfind('}') + 1
+            if json_start >= 0 and json_end > json_start:
+                extracted_profile = json.loads(response[json_start:json_end])
+            else:
+                raise ValueError("No JSON found")
+        except (json.JSONDecodeError, ValueError):
+            extracted_profile = {
+                "tone": "professional yet approachable",
+                "structure": "short paragraphs, generous line breaks",
+                "hook_style": "engaging opener",
+                "cta_style": "soft",
+                "themes": ["business", "personal growth"],
+                "dos": ["Use line breaks", "Be authentic"],
+                "donts": ["Avoid jargon"],
+                "summary": response[:500] if response else "Analysis completed"
+            }
+    except Exception as e:
+        logger.error(f"Demo voice analysis error: {e}")
+        extracted_profile = {
+            "tone": "professional yet approachable",
+            "structure": "short paragraphs, generous line breaks",
+            "hook_style": "provocative question or bold statement",
+            "cta_style": "soft engagement ask",
+            "themes": ["leadership", "personal growth", "industry insights"],
+            "dos": ["Use line breaks for readability", "Start with a hook", "End with engagement"],
+            "donts": ["Avoid long paragraphs", "No excessive hashtags"],
+            "summary": "Voice profile extracted from samples"
+        }
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Return demo profile (not saved to database)
+    return {
+        "id": f"demo-profile-{uuid.uuid4()}",
+        "user_id": "demo",
+        "raw_samples": data.raw_samples,
+        "extracted_profile": extracted_profile,
+        "settings": {
+            "post_length": "medium",
+            "emoji": "light",
+            "hashtags": "1-3",
+            "cta": "soft",
+            "risk_filter": "balanced"
+        },
+        "created_at": now,
+        "updated_at": now
+    }
+
+@api_router.post("/demo/generate-with-profile")
+async def demo_generate_with_profile(request: GeneratePostsRequest, profile: dict = None):
+    """Generate posts in demo mode with a custom analyzed profile"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="LLM API key not configured")
+    
+    # Use provided profile or default
+    extracted = profile if profile else {
+        "tone": "Direct, confident, conversational",
+        "structure": "Short paragraphs, generous line breaks",
+        "hook_style": "Bold statement or contrarian opener",
+        "cta_style": "Soft engagement question",
+        "themes": ["Leadership", "Productivity"],
+        "dos": ["Use line breaks", "Challenge conventional wisdom"],
+        "donts": ["No corporate jargon", "Avoid long paragraphs"]
+    }
+    
+    system_prompt = f"""You are a LinkedIn ghostwriter. Write posts that match this voice profile:
+
+VOICE PROFILE:
+- Tone: {extracted.get('tone', 'professional')}
+- Structure: {extracted.get('structure', 'short paragraphs with line breaks')}
+- Hook style: {extracted.get('hook_style', 'engaging opener')}
+- CTA style: {extracted.get('cta_style', 'soft')}
+- Themes: {', '.join(extracted.get('themes', ['business'])) if isinstance(extracted.get('themes'), list) else extracted.get('themes', 'business')}
+- Do: {', '.join(extracted.get('dos', ['Be authentic'])) if isinstance(extracted.get('dos'), list) else extracted.get('dos', 'Be authentic')}
+- Avoid: {', '.join(extracted.get('donts', ['Corporate jargon'])) if isinstance(extracted.get('donts'), list) else extracted.get('donts', 'Corporate jargon')}
+
+FORMAT RULES:
+- Write like a real LinkedIn post with proper line breaks
+- Never write essay-style long paragraphs
+- Each post must be distinct"""
+
+    chat = LlmChat(
+        api_key=api_key,
+        session_id=f"demo-gen-profile-{uuid.uuid4()}",
+        system_message=system_prompt
+    ).with_model("openai", "gpt-5.1")
+    
+    audience_context = f"Target audience: {request.audience}" if request.audience else "Target audience: LinkedIn professionals"
+    
+    generation_prompt = f"""Write 5 LinkedIn posts about: {request.topic}
+{audience_context}
+
+Generate 5 distinct posts with different angles:
+1. PRACTICAL: Actionable insight or tip
+2. STORY: Personal story or lesson learned  
+3. CONTRARIAN: Challenge a common belief
+4. FRAMEWORK: A checklist, framework, or step-by-step
+5. PUNCHY: Short, bold observation (under 100 words)
+
+Return ONLY a JSON array with 5 objects, each having:
+- "content": the full post text with proper line breaks (use \\n\\n for paragraph breaks)
+- "tag": one of ["Practical", "Story", "Contrarian", "Framework", "Punchy"]"""
+
+    try:
+        response = await chat.send_message(UserMessage(text=generation_prompt))
+        
+        import json
+        json_start = response.find('[')
+        json_end = response.rfind(']') + 1
+        
+        if json_start >= 0 and json_end > json_start:
+            posts_data = json.loads(response[json_start:json_end])
+        else:
+            raise ValueError("No JSON array found")
+            
+    except Exception as e:
+        logger.error(f"Demo generation with profile error: {e}")
+        posts_data = [
+            {"content": f"Here's what I've learned about {request.topic}:\n\nThe key is consistency over perfection.\n\nEvery expert was once a beginner.", "tag": "Practical"},
+            {"content": f"A story about {request.topic}:\n\nLast year, I failed. But that failure taught me everything.", "tag": "Story"},
+            {"content": f"Unpopular opinion about {request.topic}:\n\nMost advice is wrong.\n\nSimplicity beats complexity.", "tag": "Contrarian"},
+            {"content": f"My 3-step framework for {request.topic}:\n\n1. Start small\n2. Stay consistent\n3. Iterate fast", "tag": "Framework"},
+            {"content": f"{request.topic.title()} isn't complicated.\n\nWe make it complicated.\n\nStop overthinking.", "tag": "Punchy"}
+        ]
+    
+    now = datetime.now(timezone.utc).isoformat()
+    demo_posts = []
+    
+    for post_data in posts_data[:5]:
+        demo_posts.append({
+            "id": f"demo-{uuid.uuid4()}",
+            "user_id": "demo",
+            "topic": request.topic,
+            "audience": request.audience,
+            "content": post_data.get("content", ""),
+            "tags": [post_data.get("tag", "Practical")],
+            "is_favorite": False,
+            "created_at": now,
+            "updated_at": now
+        })
+    
+    return demo_posts
+
 # ============== ROOT & HEALTH ==============
 
 @api_router.get("/")
