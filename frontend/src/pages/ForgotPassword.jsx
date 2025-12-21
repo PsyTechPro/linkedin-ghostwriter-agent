@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles, Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
+import { Sparkles, Mail, ArrowLeft, Loader2, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { API } from "../App";
@@ -11,6 +11,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [devResetUrl, setDevResetUrl] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +23,12 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      await axios.post(`${API}/auth/forgot-password`, { email });
+      const response = await axios.post(`${API}/auth/forgot-password`, { email });
       setSubmitted(true);
+      // Check if we got a dev reset URL (preview mode only)
+      if (response.data.devResetUrl) {
+        setDevResetUrl(response.data.devResetUrl);
+      }
       toast.success("Check your email for the reset link");
     } catch (error) {
       // Still show success to prevent email enumeration
@@ -31,6 +36,19 @@ const ForgotPassword = () => {
       toast.success("Check your email for the reset link");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (devResetUrl) {
+      navigator.clipboard.writeText(devResetUrl);
+      toast.success("Reset link copied to clipboard");
+    }
+  };
+
+  const openResetLink = () => {
+    if (devResetUrl) {
+      window.location.href = devResetUrl;
     }
   };
 
