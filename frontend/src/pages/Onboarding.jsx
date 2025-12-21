@@ -314,17 +314,17 @@ Watch how quickly your calendar reflects your values."
                     Your Voice Profile
                   </h3>
                   <div className="grid gap-3 text-sm">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-start">
                       <span className="text-slate-400">Tone</span>
-                      <span className="text-white">{extractedProfile.tone}</span>
+                      <span className="text-white text-right max-w-[60%]">{renderProfileValue(extractedProfile?.tone)}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-start">
                       <span className="text-slate-400">Hook Style</span>
-                      <span className="text-white">{extractedProfile.hook_style}</span>
+                      <span className="text-white text-right max-w-[60%]">{renderProfileValue(extractedProfile?.hook_style)}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-start">
                       <span className="text-slate-400">CTA Style</span>
-                      <span className="text-white">{extractedProfile.cta_style}</span>
+                      <span className="text-white text-right max-w-[60%]">{renderProfileValue(extractedProfile?.cta_style)}</span>
                     </div>
                   </div>
                 </div>
