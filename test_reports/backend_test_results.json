@@ -1,0 +1,142 @@
+{
+  "summary": {
+    "tests_run": 22,
+    "tests_passed": 20,
+    "success_rate": 90.9090909090909
+  },
+  "results": [
+    {
+      "test": "API Root",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:17.467948"
+    },
+    {
+      "test": "Health Check",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:17.507345"
+    },
+    {
+      "test": "User Registration",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:17.787755"
+    },
+    {
+      "test": "Duplicate Registration (should fail)",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:17.827902"
+    },
+    {
+      "test": "User Login",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:18.090496"
+    },
+    {
+      "test": "Invalid Login (should fail)",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:18.355973"
+    },
+    {
+      "test": "Get Current User",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:18.434449"
+    },
+    {
+      "test": "Get Voice Profile (empty)",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:18.467843"
+    },
+    {
+      "test": "Get Sample Profile",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:18.501343"
+    },
+    {
+      "test": "Voice Profile Analysis",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:30.609744"
+    },
+    {
+      "test": "Get Voice Profile (after creation)",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:30.673361"
+    },
+    {
+      "test": "Update Guardrails",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:30.714596"
+    },
+    {
+      "test": "Generate Posts",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:55.760651"
+    },
+    {
+      "test": "Get All Posts",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:55.839326"
+    },
+    {
+      "test": "Get Favorite Posts",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:55.920723"
+    },
+    {
+      "test": "Update Post (Favorite)",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:55.958370"
+    },
+    {
+      "test": "Update Post Content",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:35:55.996138"
+    },
+    {
+      "test": "Regenerate Post",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:36:01.245894"
+    },
+    {
+      "test": "Delete Post",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:36:01.305676"
+    },
+    {
+      "test": "Unauthorized Voice Profile Access",
+      "success": false,
+      "details": "Expected 401, got 403 - Not authenticated",
+      "timestamp": "2025-12-21T03:36:01.341188"
+    },
+    {
+      "test": "Unauthorized Post Generation",
+      "success": false,
+      "details": "Expected 401, got 403 - Not authenticated",
+      "timestamp": "2025-12-21T03:36:01.414849"
+    },
+    {
+      "test": "Invalid Endpoint",
+      "success": true,
+      "details": "",
+      "timestamp": "2025-12-21T03:36:01.446802"
+    }
+  ],
+  "timestamp": "2025-12-21T03:36:01.447645"
+}
