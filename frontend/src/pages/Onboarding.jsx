@@ -127,8 +127,31 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-[#0B0F12] px-6 py-8">
+      {/* Demo Mode Banner */}
+      {isDemoMode && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-b border-amber-500/30">
+          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-amber-400">
+                <Play className="w-4 h-4" />
+                <span className="font-medium text-sm">Demo Mode</span>
+              </div>
+              <span className="text-slate-400 text-sm hidden sm:block">
+                Voice analysis works • Posts won't be saved
+              </span>
+            </div>
+            <button
+              onClick={() => navigate("/auth")}
+              className="text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"
+            >
+              Sign up to save →
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Nav */}
-      <nav className="max-w-4xl mx-auto flex items-center justify-between mb-12">
+      <nav className={`max-w-4xl mx-auto flex items-center justify-between mb-12 ${isDemoMode ? 'mt-12' : ''}`}>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-white" />
@@ -137,7 +160,7 @@ const Onboarding = () => {
         </div>
         <button
           data-testid="onboarding-skip-btn"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(isDemoMode ? "/demo" : "/dashboard")}
           className="text-slate-400 hover:text-white transition-colors text-sm"
         >
           Skip for now
