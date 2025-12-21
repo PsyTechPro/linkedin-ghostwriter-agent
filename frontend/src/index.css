@@ -181,10 +181,16 @@ code, pre {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
+  padding-left: 3rem;
   color: var(--ghost-text);
   width: 100%;
   transition: all 0.3s ease;
   outline: none;
+  font-size: 1rem;
+}
+
+.input-ghost:not([class*="pl-"]) {
+  padding-left: 1rem;
 }
 
 .input-ghost::placeholder {
@@ -194,6 +200,16 @@ code, pre {
 .input-ghost:focus {
   border-color: rgba(20, 184, 166, 0.5);
   box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.1);
+}
+
+/* Autofill styles for dark theme */
+.input-ghost:-webkit-autofill,
+.input-ghost:-webkit-autofill:hover,
+.input-ghost:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ghost-text);
+  -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.3) inset;
+  transition: background-color 5000s ease-in-out 0s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Textarea */
