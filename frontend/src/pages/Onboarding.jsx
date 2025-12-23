@@ -108,7 +108,21 @@ const Onboarding = () => {
       toast.success("Voice profile created!");
       setStep(2);
     } catch (e) {
-      toast.error(e.response?.data?.detail || "Failed to analyze voice");
+      const errorMsg = e.response?.data?.detail || "Failed to analyze voice";
+      
+      // Check if it's a rate limit error (429)
+      if (e.response?.status === 429) {
+        setDemoAttemptsRemaining(0);
+        toast.error(errorMsg, {
+          duration: 6000,
+          action: {
+            label: "Sign up free",
+            onClick: () => navigate("/auth")
+          }
+        });
+      } else {
+        toast.error(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
