@@ -41,16 +41,44 @@ const DemoMode = () => {
 
     setGenerating(true);
     try {
+      console.log("[Demo] Generating posts for topic:", topic);
       const res = await axios.post(`${API}/demo/generate`, { 
         topic, 
         audience: audience || null 
       });
-      setPosts([...res.data, ...posts]);
+      
+      console.log("[Demo] Response received:", res.data);
+      
+      // Validate response is an array
+      if (!Array.isArray(res.data)) {
+        console.error("[Demo] Unexpected response format:", res.data);
+        toast.error("Unexpected response format");
+        return;
+      }
+      
+      // Ensure each post has required fields
+      const validPosts = res.data.map((post, idx) => ({
+        id: post.id || `demo-${Date.now()}-${idx}`,
+        topic: post.topic || topic,
+        audience: post.audience || audience,
+        content: post.content || "",
+        tags: Array.isArray(post.tags) ? post.tags : ["Generated"],
+        is_favorite: false,
+        created_at: post.created_at || new Date().toISOString(),
+        updated_at: post.updated_at || new Date().toISOString()
+      }));
+      
+      console.log("[Demo] Valid posts:", validPosts.length);
+      
+      // Add new posts to beginning of list
+      setPosts(prev => [...validPosts, ...prev]);
       setTopic("");
       setAudience("");
-      toast.success("5 posts generated!");
+      toast.success(`${validPosts.length} posts generated!`);
     } catch (e) {
-      toast.error(e.response?.data?.detail || "Failed to generate posts");
+      console.error("[Demo] Generation error:", e);
+      const errorMsg = e.response?.data?.detail || e.message || "Failed to generate posts";
+      toast.error(errorMsg);
     } finally {
       setGenerating(false);
     }
