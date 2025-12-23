@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, Check, ArrowRight, ArrowLeft, Loader2,
-  Mic, Settings, Zap, Copy, Play
+  Mic, Settings, Zap, Copy, Play, AlertTriangle
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
