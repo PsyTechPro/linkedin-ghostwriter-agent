@@ -290,14 +290,17 @@ const Onboarding = () => {
                   <label className="text-sm font-medium text-slate-300">
                     {isDemoMode ? "Your posts or sample posts" : "Your LinkedIn posts"}
                   </label>
-                  <button
-                    data-testid="load-sample-btn"
-                    onClick={loadSamplePosts}
-                    className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1"
-                  >
-                    <Copy className="w-4 h-4" />
-                    {isDemoMode ? "Use sample posts instead" : "Load sample"}
-                  </button>
+                  {/* Only show prominent button in demo mode */}
+                  {isDemoMode && (
+                    <button
+                      data-testid="load-sample-btn"
+                      onClick={loadSamplePosts}
+                      className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1"
+                    >
+                      <Copy className="w-4 h-4" />
+                      Use sample posts instead
+                    </button>
+                  )}
                 </div>
                 
                 {/* Demo mode helper text */}
@@ -319,9 +322,23 @@ const Onboarding = () => {
                     : "Paste your LinkedIn posts here, separated by line breaks or dashes (---)...\n\nExample:\n\nHere's what I learned after 10 years of leading teams:\n\nThe best leaders don't have all the answers.\nThey have the best questions.\n\n---\n\nStop saying 'I don't have time.'\nStart saying 'It's not a priority.'\n\nWatch how quickly your calendar reflects your values."
                   }
                 />
-                <p className="text-xs text-slate-500 mt-3">
-                  We learn your style—NOT your content. We generate new, original posts.
-                </p>
+                
+                {/* Footer text - different for demo vs signed-in users */}
+                <div className="flex items-center justify-between mt-3">
+                  <p className="text-xs text-slate-500">
+                    We learn your style—NOT your content. We generate new, original posts.
+                  </p>
+                  {/* Subtle sample option for signed-in users */}
+                  {!isDemoMode && !samplePosts && (
+                    <button
+                      data-testid="load-sample-btn"
+                      onClick={loadSamplePosts}
+                      className="text-xs text-slate-500 hover:text-teal-400 transition-colors"
+                    >
+                      Don&apos;t have posts ready? <span className="underline">Try with sample posts</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               <button
