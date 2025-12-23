@@ -112,11 +112,15 @@ const AuthProvider = ({ children }) => {
     setVoiceProfile(profile);
   };
 
+  const updateDemoProfile = (profile) => {
+    setDemoProfile(profile);
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, token, loading, login, register, logout, 
       voiceProfile, updateVoiceProfile, isAuthenticated: !!user,
-      isDemoMode, demoProfile, enterDemoMode, exitDemoMode
+      isDemoMode, demoProfile, enterDemoMode, exitDemoMode, updateDemoProfile
     }}>
       {children}
     </AuthContext.Provider>
