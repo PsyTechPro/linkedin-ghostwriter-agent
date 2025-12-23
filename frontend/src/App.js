@@ -92,8 +92,7 @@ const AuthProvider = ({ children }) => {
   const enterDemoMode = async () => {
     try {
       const res = await axios.get(`${API}/demo/sample-profile`);
-      // TEMP TEST: Force _trained to true to verify UI changes
-      setDemoProfile({ ...res.data.extracted_profile, _trained: true });
+      setDemoProfile(res.data.extracted_profile);
       setIsDemoMode(true);
       setUser({ name: "Demo User", email: "demo@example.com", id: "demo" });
       return true;
