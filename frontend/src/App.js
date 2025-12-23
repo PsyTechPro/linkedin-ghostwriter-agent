@@ -89,14 +89,10 @@ const AuthProvider = ({ children }) => {
     setDemoProfile(null);
   };
 
-  const enterDemoMode = async (withTrainedVoice = false) => {
+  const enterDemoMode = async () => {
     try {
       const res = await axios.get(`${API}/demo/sample-profile`);
-      // If withTrainedVoice is true, simulate a trained voice profile
-      const profile = withTrainedVoice 
-        ? { ...res.data.extracted_profile, _trained: true }
-        : res.data.extracted_profile;
-      setDemoProfile(profile);
+      setDemoProfile(res.data.extracted_profile);
       setIsDemoMode(true);
       setUser({ name: "Demo User", email: "demo@example.com", id: "demo" });
       return true;
