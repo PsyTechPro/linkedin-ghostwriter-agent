@@ -319,8 +319,12 @@ const DemoMode = () => {
                   <ul className="text-slate-400 text-sm space-y-1">
                     <li>• Posts are generated but <strong className="text-slate-300">not saved</strong></li>
                     <li>• Favorites and editing are <strong className="text-slate-300">disabled</strong></li>
-                    <li>• Using a <strong className="text-slate-300">sample voice profile</strong></li>
-                    <li>• <strong className="text-slate-300">Sign up free</strong> to train your own voice</li>
+                    {hasDemoTrainedVoice ? (
+                      <li>• Using <strong className="text-teal-400">your trained voice</strong></li>
+                    ) : (
+                      <li>• Using a <strong className="text-slate-300">sample voice profile</strong> — <button onClick={() => navigate("/onboarding")} className="text-teal-400 hover:text-teal-300 underline">train yours free</button></li>
+                    )}
+                    <li>• <strong className="text-slate-300">Sign up</strong> for unlimited generations & saved drafts</li>
                   </ul>
                 </div>
               </div>
