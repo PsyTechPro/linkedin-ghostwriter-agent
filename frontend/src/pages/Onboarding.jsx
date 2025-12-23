@@ -47,6 +47,22 @@ const Onboarding = () => {
   const [audience, setAudience] = useState("");
   const [generatedPosts, setGeneratedPosts] = useState([]);
   const [generating, setGenerating] = useState(false);
+  const [demoAttemptsRemaining, setDemoAttemptsRemaining] = useState(null);
+
+  // Check demo voice limit on mount
+  useEffect(() => {
+    const checkDemoLimit = async () => {
+      if (isDemoMode) {
+        try {
+          const res = await axios.get(`${API}/demo/voice-limit`);
+          setDemoAttemptsRemaining(res.data.remaining);
+        } catch (e) {
+          console.error("Failed to check demo limit:", e);
+        }
+      }
+    };
+    checkDemoLimit();
+  }, [isDemoMode]);
 
   // Load sample data
   const loadSamplePosts = async () => {
@@ -78,6 +94,14 @@ const Onboarding = () => {
         { headers }
       );
       setExtractedProfile(res.data.extracted_profile);
+      
+      // Update remaining attempts for demo mode
+      if (isDemoMode && res.data.remaining !== undefined) {
+        setDemoAttemptsRemaining(res.data.remaining);
+      } else if (isDemoMode) {
+        // Decrement locally if not returned
+        setDemoAttemptsRemaining(prev => prev !== null ? Math.max(0, prev - 1) : null);
+      }
       if (!isDemoMode) {
         updateVoiceProfile(res.data);
       }
