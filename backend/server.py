@@ -1112,8 +1112,13 @@ Return ONLY a valid JSON object with the analysis."""
         "updated_at": now
     }
 
+class GenerateWithProfileRequest(BaseModel):
+    topic: str
+    audience: Optional[str] = None
+    profile: Optional[dict] = None
+
 @api_router.post("/demo/generate-with-profile")
-async def demo_generate_with_profile(request: GeneratePostsRequest, profile: dict = None):
+async def demo_generate_with_profile(request: GenerateWithProfileRequest):
     """Generate posts in demo mode with a custom analyzed profile"""
     from emergentintegrations.llm.chat import LlmChat, UserMessage
     
@@ -1122,7 +1127,7 @@ async def demo_generate_with_profile(request: GeneratePostsRequest, profile: dic
         raise HTTPException(status_code=500, detail="LLM API key not configured")
     
     # Use provided profile or default
-    extracted = profile if profile else {
+    extracted = request.profile if request.profile else {
         "tone": "Direct, confident, conversational",
         "structure": "Short paragraphs, generous line breaks",
         "hook_style": "Bold statement or contrarian opener",
