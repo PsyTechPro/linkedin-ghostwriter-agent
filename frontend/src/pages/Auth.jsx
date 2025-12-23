@@ -17,7 +17,8 @@ const Auth = () => {
     name: ""
   });
 
-  if (isAuthenticated) {
+  // Redirect authenticated users (but not demo mode - that's handled by the button)
+  if (isAuthenticated && !isDemoMode) {
     return <Navigate to={voiceProfile ? "/dashboard" : "/onboarding"} replace />;
   }
 
