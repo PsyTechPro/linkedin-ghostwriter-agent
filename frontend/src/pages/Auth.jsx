@@ -83,7 +83,7 @@ const Auth = () => {
           <div className="bg-slate-800/50 rounded-lg px-4 py-3 mb-6 border border-slate-700/50">
             <p className="text-slate-400 text-sm">
               {isLogin 
-                ? "Sign in with your Ghostwriter account credentials."
+                ? "Sign in with your LinkedIn Ghostwriter Agent account credentials."
                 : "New here? Create a free account below — no Google login required."
               }
             </p>
