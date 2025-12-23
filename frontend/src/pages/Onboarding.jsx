@@ -304,7 +304,7 @@ const Onboarding = () => {
                 {isDemoMode && !samplePosts && (
                   <div className="bg-teal-500/10 border border-teal-500/20 rounded-lg p-3 mb-4">
                     <p className="text-teal-400 text-sm">
-                      <strong>Tip:</strong> Don't have posts handy? Click "<span className="underline">Use sample posts instead</span>" above to try with pre-made examples.
+                      <strong>Tip:</strong> Don&apos;t have posts handy? Click &ldquo;<span className="underline">Use sample posts instead</span>&rdquo; above to try with pre-made examples.
                     </p>
                   </div>
                 )}
