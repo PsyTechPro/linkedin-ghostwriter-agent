@@ -195,14 +195,19 @@ const Onboarding = () => {
                 <span className="font-medium text-sm">Demo Mode</span>
               </div>
               <span className="text-slate-400 text-sm hidden sm:block">
-                Voice analysis works • Posts won't be saved
+                {demoAttemptsRemaining !== null && demoAttemptsRemaining > 0 
+                  ? `${demoAttemptsRemaining} voice training${demoAttemptsRemaining === 1 ? '' : 's'} remaining`
+                  : demoAttemptsRemaining === 0 
+                    ? "Voice training limit reached"
+                    : "Posts won't be saved"
+                }
               </span>
             </div>
             <button
               onClick={() => navigate("/auth")}
               className="text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"
             >
-              Sign up to save →
+              Sign up for unlimited →
             </button>
           </div>
         </div>
