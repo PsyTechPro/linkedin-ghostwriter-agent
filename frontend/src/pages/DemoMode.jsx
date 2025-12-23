@@ -160,11 +160,11 @@ const DemoMode = () => {
 
         {/* Voice Profile Card */}
         {demoProfile && (
-          <div className={`card-ghost p-4 mb-6 ${hasTrainedVoice ? 'border-teal-500/30' : 'border-amber-500/30'}`}>
+          <div className={`card-ghost p-4 mb-6 ${hasDemoTrainedVoice ? 'border-teal-500/30' : 'border-amber-500/30'}`}>
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className={`w-4 h-4 ${hasTrainedVoice ? 'text-teal-400' : 'text-amber-400'}`} />
-              <span className={`text-sm font-medium ${hasTrainedVoice ? 'text-teal-400' : 'text-amber-400'}`}>
-                {hasTrainedVoice ? 'Your Trained Voice' : 'Sample Voice'}
+              <Sparkles className={`w-4 h-4 ${hasDemoTrainedVoice ? 'text-teal-400' : 'text-amber-400'}`} />
+              <span className={`text-sm font-medium ${hasDemoTrainedVoice ? 'text-teal-400' : 'text-amber-400'}`}>
+                {hasDemoTrainedVoice ? 'Your Trained Voice' : 'Sample Voice'}
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
