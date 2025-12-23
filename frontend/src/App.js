@@ -116,11 +116,14 @@ const AuthProvider = ({ children }) => {
     setDemoProfile(profile);
   };
 
+  // Check if user has trained their own voice (vs sample profile)
+  const hasDemoTrainedVoice = isDemoMode && demoProfile && demoProfile._trained === true;
+
   return (
     <AuthContext.Provider value={{ 
       user, token, loading, login, register, logout, 
       voiceProfile, updateVoiceProfile, isAuthenticated: !!user,
-      isDemoMode, demoProfile, enterDemoMode, exitDemoMode, updateDemoProfile
+      isDemoMode, demoProfile, enterDemoMode, exitDemoMode, updateDemoProfile, hasDemoTrainedVoice
     }}>
       {children}
     </AuthContext.Provider>
