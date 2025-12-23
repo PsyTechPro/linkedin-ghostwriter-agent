@@ -278,14 +278,17 @@ const Onboarding = () => {
                   Train your voice
                 </h1>
                 <p className="text-slate-400">
-                  Paste 5–10 of your best LinkedIn posts. We'll learn your unique style.
+                  {isDemoMode 
+                    ? "Paste your LinkedIn posts below, or use our sample posts to try the feature."
+                    : "Paste 5–10 of your best LinkedIn posts. We'll learn your unique style."
+                  }
                 </p>
               </div>
 
               <div className="card-ghost p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <label className="text-sm font-medium text-slate-300">
-                    Your LinkedIn posts
+                    {isDemoMode ? "Your posts or sample posts" : "Your LinkedIn posts"}
                   </label>
                   <button
                     data-testid="load-sample-btn"
@@ -293,29 +296,28 @@ const Onboarding = () => {
                     className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1"
                   >
                     <Copy className="w-4 h-4" />
-                    Load sample
+                    {isDemoMode ? "Use sample posts instead" : "Load sample"}
                   </button>
                 </div>
+                
+                {/* Demo mode helper text */}
+                {isDemoMode && !samplePosts && (
+                  <div className="bg-teal-500/10 border border-teal-500/20 rounded-lg p-3 mb-4">
+                    <p className="text-teal-400 text-sm">
+                      <strong>Tip:</strong> Don't have posts handy? Click "<span className="underline">Use sample posts instead</span>" above to try with pre-made examples.
+                    </p>
+                  </div>
+                )}
+                
                 <textarea
                   data-testid="sample-posts-textarea"
                   value={samplePosts}
                   onChange={(e) => setSamplePosts(e.target.value)}
                   className="textarea-ghost min-h-[300px]"
-                  placeholder="Paste your LinkedIn posts here, separated by line breaks or dashes (---)...
-
-Example:
-
-Here's what I learned after 10 years of leading teams:
-
-The best leaders don't have all the answers.
-They have the best questions.
-
----
-
-Stop saying 'I don't have time.'
-Start saying 'It's not a priority.'
-
-Watch how quickly your calendar reflects your values."
+                  placeholder={isDemoMode 
+                    ? "Paste your LinkedIn posts here to train on YOUR voice...\n\nOr click 'Use sample posts instead' above to try with example posts.\n\n---\n\nPosts should be separated by line breaks or dashes (---)."
+                    : "Paste your LinkedIn posts here, separated by line breaks or dashes (---)...\n\nExample:\n\nHere's what I learned after 10 years of leading teams:\n\nThe best leaders don't have all the answers.\nThey have the best questions.\n\n---\n\nStop saying 'I don't have time.'\nStart saying 'It's not a priority.'\n\nWatch how quickly your calendar reflects your values."
+                  }
                 />
                 <p className="text-xs text-slate-500 mt-3">
                   We learn your style—NOT your content. We generate new, original posts.
