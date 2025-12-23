@@ -279,7 +279,7 @@ const Onboarding = () => {
                 </h1>
                 <p className="text-slate-400">
                   {isDemoMode 
-                    ? "Paste your LinkedIn posts below, or use our sample posts to try the feature."
+                    ? "Paste a few of your LinkedIn posts below, or use our sample posts to try the feature."
                     : "Paste 5–10 of your best LinkedIn posts. We'll learn your unique style."
                   }
                 </p>
