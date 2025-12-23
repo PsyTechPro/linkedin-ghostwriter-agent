@@ -102,7 +102,11 @@ const Onboarding = () => {
         // Decrement locally if not returned
         setDemoAttemptsRemaining(prev => prev !== null ? Math.max(0, prev - 1) : null);
       }
-      if (!isDemoMode) {
+      
+      // Store the trained voice profile
+      if (isDemoMode) {
+        updateDemoProfile(res.data.extracted_profile);
+      } else {
         updateVoiceProfile(res.data);
       }
       toast.success("Voice profile created!");
