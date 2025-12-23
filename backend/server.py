@@ -260,7 +260,7 @@ async def forgot_password(data: ForgotPasswordRequest, request: Request):
     rate_limit_key = f"forgot:{client_ip}:{data.email}"
     
     # Detect if we're in preview/dev mode
-    frontend_url = os.environ.get('FRONTEND_URL', 'https://linkedin-ghost-2.preview.emergentagent.com')
+    frontend_url = os.environ.get('FRONTEND_URL', 'https://voice-writer-5.preview.emergentagent.com')
     is_preview_mode = 'preview' in frontend_url or 'localhost' in frontend_url or os.environ.get('DEV_MODE', '').lower() == 'true'
     
     # Check rate limit
