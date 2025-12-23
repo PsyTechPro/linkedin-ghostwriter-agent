@@ -18,15 +18,26 @@ const DemoMode = () => {
   const [topic, setTopic] = useState("");
   const [audience, setAudience] = useState("");
 
+  // Debug logging
+  console.log("[DemoMode] Render state:", {
+    isDemoMode,
+    hasDemoTrainedVoice,
+    demoProfile: demoProfile ? { ...demoProfile, _trained: demoProfile?._trained } : null
+  });
+
   useEffect(() => {
     const initDemo = async () => {
+      console.log("[DemoMode] initDemo called, isDemoMode:", isDemoMode);
       if (!isDemoMode) {
+        console.log("[DemoMode] Not in demo mode, calling enterDemoMode()");
         const success = await enterDemoMode();
         if (!success) {
           toast.error("Failed to start demo");
           navigate("/");
           return;
         }
+      } else {
+        console.log("[DemoMode] Already in demo mode, skipping enterDemoMode()");
       }
       setLoading(false);
     };
