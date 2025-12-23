@@ -115,6 +115,8 @@ const Auth = () => {
                     className="input-ghost pl-12"
                     placeholder="John Doe"
                     autoComplete="off"
+                    data-lpignore="true"
+                    data-form-type="other"
                   />
                 </div>
               </div>
@@ -135,6 +137,8 @@ const Auth = () => {
                   placeholder="you@example.com"
                   required
                   autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
                 />
               </div>
             </div>
@@ -155,6 +159,8 @@ const Auth = () => {
                   required
                   minLength={6}
                   autoComplete="new-password"
+                  data-lpignore="true"
+                  data-form-type="other"
                 />
               </div>
               {!isLogin && (
