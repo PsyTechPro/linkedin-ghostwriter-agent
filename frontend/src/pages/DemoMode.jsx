@@ -17,6 +17,8 @@ const DemoMode = () => {
   const [generating, setGenerating] = useState(false);
   const [topic, setTopic] = useState("");
   const [audience, setAudience] = useState("");
+  const [hasTrainedVoice, setHasTrainedVoice] = useState(false);
+  const [initialProfile, setInitialProfile] = useState(null);
 
   useEffect(() => {
     const initDemo = async () => {
@@ -32,6 +34,20 @@ const DemoMode = () => {
     };
     initDemo();
   }, []);
+
+  // Detect if user has trained their own voice
+  useEffect(() => {
+    if (demoProfile && !initialProfile) {
+      // Store the initial sample profile
+      setInitialProfile(demoProfile);
+    } else if (demoProfile && initialProfile) {
+      // Check if profile has changed (user trained their own voice)
+      const profileChanged = JSON.stringify(demoProfile) !== JSON.stringify(initialProfile);
+      if (profileChanged) {
+        setHasTrainedVoice(true);
+      }
+    }
+  }, [demoProfile, initialProfile]);
 
   const generatePosts = async () => {
     if (!topic.trim()) {
