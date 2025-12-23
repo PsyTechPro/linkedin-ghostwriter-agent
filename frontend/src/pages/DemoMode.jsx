@@ -319,7 +319,7 @@ const DemoMode = () => {
               <AnimatePresence>
                 {posts.map((post, i) => (
                   <motion.div
-                    key={post.id}
+                    key={post.id || `post-${i}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
@@ -330,11 +330,11 @@ const DemoMode = () => {
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <p className="text-xs text-slate-500 mb-1">
-                          {post.topic}
+                          {post.topic || "Generated Post"}
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {post.tags.map(tag => (
-                            <span key={tag} className="tag-chip">{tag}</span>
+                          {(post.tags || []).map((tag, tagIdx) => (
+                            <span key={`${tag}-${tagIdx}`} className="tag-chip">{tag}</span>
                           ))}
                         </div>
                       </div>
@@ -343,7 +343,7 @@ const DemoMode = () => {
                     {/* Content */}
                     <div className="mb-4">
                       <pre className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed font-sans">
-                        {post.content}
+                        {post.content || "No content available"}
                       </pre>
                     </div>
 
