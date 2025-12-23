@@ -140,7 +140,14 @@ const Onboarding = () => {
         );
       }
       toast.success("Settings saved!");
-      setStep(3);
+      
+      // In demo mode, skip step 3 and go directly to /demo
+      // (to avoid double-generation since /demo also has generate UI)
+      if (isDemoMode) {
+        navigate("/demo");
+      } else {
+        setStep(3);
+      }
     } catch (e) {
       toast.error("Failed to save settings");
     } finally {
