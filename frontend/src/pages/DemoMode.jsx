@@ -57,11 +57,25 @@ const DemoMode = () => {
 
     setGenerating(true);
     try {
-      console.log("[Demo] Generating posts for topic:", topic);
-      const res = await axios.post(`${API}/demo/generate`, { 
-        topic, 
-        audience: audience || null 
-      });
+      console.log("[Demo] Generating posts for topic:", topic, "hasTrainedVoice:", hasTrainedVoice);
+      
+      let res;
+      if (hasTrainedVoice && demoProfile) {
+        // Use trained voice profile
+        console.log("[Demo] Using trained voice profile");
+        res = await axios.post(`${API}/demo/generate-with-profile`, { 
+          topic, 
+          audience: audience || null,
+          profile: demoProfile
+        });
+      } else {
+        // Use sample voice profile
+        console.log("[Demo] Using sample voice profile");
+        res = await axios.post(`${API}/demo/generate`, { 
+          topic, 
+          audience: audience || null 
+        });
+      }
       
       console.log("[Demo] Response received:", res.data);
       
