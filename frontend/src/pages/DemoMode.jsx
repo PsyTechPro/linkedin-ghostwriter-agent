@@ -225,7 +225,10 @@ const DemoMode = () => {
               Try It Out
             </h1>
             <p className="text-slate-400">
-              Generate LinkedIn posts using our sample voice profile
+              {hasDemoTrainedVoice 
+                ? "Generate LinkedIn posts using your trained voice profile"
+                : "Generate LinkedIn posts using our sample voice profile"
+              }
             </p>
           </div>
 
