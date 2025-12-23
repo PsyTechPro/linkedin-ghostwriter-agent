@@ -41,10 +41,10 @@ const DemoMode = () => {
 
     setGenerating(true);
     try {
-      console.log("[Demo] Generating posts for topic:", topic, "hasTrainedVoice:", hasTrainedVoice);
+      console.log("[Demo] Generating posts for topic:", topic, "hasDemoTrainedVoice:", hasDemoTrainedVoice);
       
       let res;
-      if (hasTrainedVoice && demoProfile) {
+      if (hasDemoTrainedVoice && demoProfile) {
         // Use trained voice profile
         console.log("[Demo] Using trained voice profile");
         res = await axios.post(`${API}/demo/generate-with-profile`, { 
