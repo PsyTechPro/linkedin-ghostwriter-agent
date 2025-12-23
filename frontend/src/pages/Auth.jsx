@@ -225,24 +225,10 @@ const Auth = () => {
             </p>
             <button
               data-testid="auth-demo-btn"
-              onClick={async () => {
-                setDemoLoading(true);
-                const success = await enterDemoMode();
-                if (success) {
-                  navigate("/demo");
-                } else {
-                  toast.error("Failed to start demo");
-                }
-                setDemoLoading(false);
-              }}
-              disabled={demoLoading}
+              onClick={() => navigate("/demo-choice")}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-slate-400 hover:text-teal-400 hover:bg-white/5 transition-all text-sm border border-white/10"
             >
-              {demoLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Play className="w-4 h-4" />
-              )}
+              <Play className="w-4 h-4" />
               Try demo without signup
             </button>
           </div>
