@@ -105,7 +105,8 @@ const Onboarding = () => {
       
       // Store the trained voice profile
       if (isDemoMode) {
-        updateDemoProfile(res.data.extracted_profile);
+        // Add a flag to indicate this is a trained profile (not sample)
+        updateDemoProfile({ ...res.data.extracted_profile, _trained: true });
       } else {
         updateVoiceProfile(res.data);
       }
