@@ -946,10 +946,85 @@ Return ONLY a JSON array with 5 objects, each having:
 class DemoVoiceAnalyzeRequest(BaseModel):
     raw_samples: str
 
+# Demo voice training rate limit settings
+DEMO_VOICE_LIMIT_PER_DAY = 2
+DEMO_VOICE_LIMIT_WINDOW = 86400  # 24 hours in seconds
+
+async def check_demo_voice_limit(ip_address: str) -> tuple[bool, int]:
+    """Check if IP has exceeded demo voice training limit. Returns (allowed, remaining)"""
+    now = datetime.now(timezone.utc)
+    window_start = now - timedelta(seconds=DEMO_VOICE_LIMIT_WINDOW)
+    
+    # Find existing record for this IP
+    record = await db.demo_rate_limits.find_one({"ip": ip_address, "type": "voice_train"})
+    
+    if not record:
+        # First time - create record
+        await db.demo_rate_limits.insert_one({
+            "ip": ip_address,
+            "type": "voice_train",
+            "count": 1,
+            "first_request": now.isoformat(),
+            "last_request": now.isoformat()
+        })
+        return True, DEMO_VOICE_LIMIT_PER_DAY - 1
+    
+    # Check if window has reset
+    first_request = datetime.fromisoformat(record["first_request"].replace('Z', '+00:00'))
+    if first_request < window_start:
+        # Window expired, reset count
+        await db.demo_rate_limits.update_one(
+            {"ip": ip_address, "type": "voice_train"},
+            {"$set": {"count": 1, "first_request": now.isoformat(), "last_request": now.isoformat()}}
+        )
+        return True, DEMO_VOICE_LIMIT_PER_DAY - 1
+    
+    # Check if limit exceeded
+    if record["count"] >= DEMO_VOICE_LIMIT_PER_DAY:
+        return False, 0
+    
+    # Increment count
+    await db.demo_rate_limits.update_one(
+        {"ip": ip_address, "type": "voice_train"},
+        {"$inc": {"count": 1}, "$set": {"last_request": now.isoformat()}}
+    )
+    return True, DEMO_VOICE_LIMIT_PER_DAY - record["count"] - 1
+
+@api_router.get("/demo/voice-limit")
+async def get_demo_voice_limit(request: Request):
+    """Check remaining demo voice training attempts for this IP"""
+    client_ip = request.client.host if request.client else "unknown"
+    
+    record = await db.demo_rate_limits.find_one({"ip": client_ip, "type": "voice_train"})
+    
+    if not record:
+        return {"remaining": DEMO_VOICE_LIMIT_PER_DAY, "limit": DEMO_VOICE_LIMIT_PER_DAY}
+    
+    # Check if window has reset
+    now = datetime.now(timezone.utc)
+    window_start = now - timedelta(seconds=DEMO_VOICE_LIMIT_WINDOW)
+    first_request = datetime.fromisoformat(record["first_request"].replace('Z', '+00:00'))
+    
+    if first_request < window_start:
+        return {"remaining": DEMO_VOICE_LIMIT_PER_DAY, "limit": DEMO_VOICE_LIMIT_PER_DAY}
+    
+    remaining = max(0, DEMO_VOICE_LIMIT_PER_DAY - record["count"])
+    return {"remaining": remaining, "limit": DEMO_VOICE_LIMIT_PER_DAY}
+
 @api_router.post("/demo/analyze-voice")
-async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest):
-    """Analyze voice in demo mode without authentication"""
+async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest, request: Request):
+    """Analyze voice in demo mode without authentication (rate limited)"""
     from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    # Check rate limit
+    client_ip = request.client.host if request.client else "unknown"
+    allowed, remaining = await check_demo_voice_limit(client_ip)
+    
+    if not allowed:
+        raise HTTPException(
+            status_code=429, 
+            detail="You've reached the demo limit (2 voice trainings per day). Sign up free for unlimited access!"
+        )
     
     api_key = os.environ.get('EMERGENT_LLM_KEY')
     if not api_key:
@@ -957,6 +1032,8 @@ async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest):
     
     if not data.raw_samples or len(data.raw_samples) < 100:
         raise HTTPException(status_code=400, detail="Please provide at least 100 characters of sample posts")
+    
+    logger.info(f"Demo voice training for IP {client_ip} - {remaining} attempts remaining after this")
     
     # Analyze voice using GPT-5.1
     chat = LlmChat(
