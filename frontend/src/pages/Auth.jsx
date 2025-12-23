@@ -7,7 +7,7 @@ import { useAuth } from "../App";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { login, register, isAuthenticated, voiceProfile, enterDemoMode } = useAuth();
+  const { login, register, isAuthenticated, voiceProfile, enterDemoMode, isDemoMode } = useAuth();
   const [isLogin, setIsLogin] = useState(false); // Default to signup for first-time users
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
