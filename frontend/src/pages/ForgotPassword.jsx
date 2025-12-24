@@ -25,15 +25,15 @@ const ForgotPassword = () => {
     try {
       const response = await axios.post(`${API}/auth/forgot-password`, { email });
       setSubmitted(true);
-      // Check if we got a dev reset URL (preview mode only)
+      // Check if we got a reset URL
       if (response.data.devResetUrl) {
         setDevResetUrl(response.data.devResetUrl);
       }
-      toast.success("Check your email for the reset link");
+      toast.success("Reset link ready!");
     } catch (error) {
       // Still show success to prevent email enumeration
       setSubmitted(true);
-      toast.success("Check your email for the reset link");
+      toast.success("Reset link ready!");
     } finally {
       setLoading(false);
     }
