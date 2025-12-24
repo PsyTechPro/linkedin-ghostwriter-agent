@@ -22,9 +22,11 @@ const Dashboard = () => {
   const [editContent, setEditContent] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [usageStats, setUsageStats] = useState(null);
 
   useEffect(() => {
     fetchPosts();
+    fetchUsageStats();
   }, []);
 
   const fetchPosts = async () => {
@@ -40,6 +42,17 @@ const Dashboard = () => {
     }
   };
 
+  const fetchUsageStats = async () => {
+    try {
+      const res = await axios.get(`${API}/auth/usage`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUsageStats(res.data);
+    } catch (e) {
+      console.error("Failed to fetch usage stats:", e);
+    }
+  };
+
   const generatePosts = async () => {
     if (!topic.trim()) {
       toast.error("Please enter a topic");
@@ -49,6 +62,12 @@ const Dashboard = () => {
     if (!voiceProfile) {
       toast.error("Please create a voice profile first");
       navigate("/onboarding");
+      return;
+    }
+
+    // Check if limit reached (for non-admin users)
+    if (usageStats && !usageStats.is_admin && usageStats.limit_reached) {
+      toast.error("You've reached the free limit. Upgrade to continue.");
       return;
     }
 
@@ -63,8 +82,11 @@ const Dashboard = () => {
       setTopic("");
       setAudience("");
       toast.success("5 posts generated!");
+      // Refresh usage stats after generation
+      fetchUsageStats();
     } catch (e) {
-      toast.error(e.response?.data?.detail || "Failed to generate posts");
+      const errorMsg = e.response?.data?.detail || "Failed to generate posts";
+      toast.error(errorMsg);
     } finally {
       setGenerating(false);
     }
