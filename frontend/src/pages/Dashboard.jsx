@@ -150,8 +150,64 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#0B0F12]">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 bottom-0 w-64 glass border-r border-white/5 p-6 flex flex-col">
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-white/5 sticky top-0 bg-[#0B0F12] z-40">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-semibold text-white font-['Outfit']">Ghostwriter</span>
+        </div>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-2 text-slate-400 hover:text-white"
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-[#0B0F12]/95 pt-16">
+          <div className="p-6 space-y-4">
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5 text-white"
+            >
+              <FileText className="w-5 h-5" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => { navigate("/settings"); setMobileMenuOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-white/5"
+            >
+              <Settings className="w-5 h-5" />
+              Settings
+            </button>
+            <div className="pt-4 border-t border-white/10">
+              <div className="flex items-center gap-3 mb-4 px-2">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                  {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{user?.name}</p>
+                  <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-slate-400 hover:bg-white/5 text-sm"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 glass border-r border-white/5 p-6 flex-col">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-10">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
@@ -201,8 +257,8 @@ const Dashboard = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="ml-64 p-8">
+      {/* Main Content - Full width on mobile, offset on desktop */}
+      <main className="lg:ml-64 p-4 sm:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
