@@ -698,6 +698,13 @@ Example format:
         await db.draft_posts.insert_one(post_doc)
         saved_posts.append(DraftPostResponse(**post_doc))
     
+    # Increment usage counter for non-admin users
+    if not is_admin:
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$inc": {"posts_generated": len(saved_posts)}}
+        )
+    
     return saved_posts
 
 @api_router.get("/posts", response_model=List[DraftPostResponse])
