@@ -332,6 +332,26 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {/* Usage stats - only show for non-admin users */}
+            {usageStats && !usageStats.is_admin && (
+              <div className="mb-4">
+                {usageStats.limit_reached ? (
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+                    <p className="text-amber-400 text-sm font-medium mb-1">
+                      You've reached the free limit of {usageStats.posts_limit} generated posts.
+                    </p>
+                    <p className="text-slate-400 text-xs">
+                      Upgrade to continue generating posts.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-xs">
+                    {usageStats.posts_generated} of {usageStats.posts_limit} free posts used • {usageStats.posts_remaining} remaining
+                  </p>
+                )}
+              </div>
+            )}
+
             {generating && (
               <div className="bg-black/20 rounded-lg p-4 mb-4 flex items-center gap-3">
                 <div className="spinner w-6 h-6" />
@@ -345,7 +365,7 @@ const Dashboard = () => {
             <button
               data-testid="dashboard-generate-btn"
               onClick={generatePosts}
-              disabled={generating || !topic.trim()}
+              disabled={generating || !topic.trim() || (usageStats && !usageStats.is_admin && usageStats.limit_reached)}
               className="btn-primary py-2.5 px-6 flex items-center gap-2 disabled:opacity-50"
             >
               {generating ? (
