@@ -544,6 +544,21 @@ async def update_guardrails(settings: GuardrailsUpdate, user: dict = Depends(get
 async def generate_posts(request: GeneratePostsRequest, user: dict = Depends(get_current_user)):
     from emergentintegrations.llm.chat import LlmChat, UserMessage
     
+    # Check if user is admin (unlimited access)
+    user_email = user.get("email", "")
+    is_admin = is_admin_user(user_email)
+    
+    # Check free usage limit for non-admin users
+    if not is_admin:
+        user_doc = await db.users.find_one({"id": user["id"]}, {"_id": 0})
+        posts_generated = user_doc.get("posts_generated", 0) if user_doc else 0
+        
+        if posts_generated >= FREE_POST_LIMIT:
+            raise HTTPException(
+                status_code=403, 
+                detail=f"You've reached the free limit of {FREE_POST_LIMIT} generated posts. Upgrade to continue."
+            )
+    
     api_key = os.environ.get('EMERGENT_LLM_KEY')
     if not api_key:
         raise HTTPException(status_code=500, detail="LLM API key not configured")
