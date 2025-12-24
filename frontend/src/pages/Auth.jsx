@@ -195,6 +195,13 @@ const Auth = () => {
                 isLogin ? "Sign in" : "Create free account"
               )}
             </button>
+            
+            {/* Privacy notice - only on signup */}
+            {!isLogin && (
+              <p className="text-xs text-slate-500 text-center mt-3">
+                We respect your privacy. Your email will never be shared and is used only for account access.
+              </p>
+            )}
           </form>
 
           {/* Toggle between sign in and sign up */}
