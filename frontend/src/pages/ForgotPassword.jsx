@@ -94,18 +94,17 @@ const ForgotPassword = () => {
                 <CheckCircle className="w-8 h-8 text-teal-400" />
               </div>
               <h1 className="text-2xl font-bold text-white font-['Outfit'] mb-3">
-                Check your email
+                Reset link ready
               </h1>
               <p className="text-slate-400 mb-6">
-                If an account exists for <span className="text-white">{email}</span>, you'll receive a password reset link shortly.
+                If an account exists for <span className="text-white">{email}</span>, you can use the link below to reset your password.
               </p>
               
-              {/* Dev/Preview mode reset link */}
+              {/* Reset link */}
               {devResetUrl && (
-                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-6 text-left">
-                  <p className="text-amber-400 text-xs font-medium mb-3 flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-                    Shown in preview mode only
+                <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4 mb-6 text-left">
+                  <p className="text-teal-400 text-xs font-medium mb-3">
+                    Click the button below to reset your password:
                   </p>
                   
                   <button
@@ -114,7 +113,7 @@ const ForgotPassword = () => {
                     className="btn-primary w-full py-2.5 mb-3 flex items-center justify-center gap-2 text-sm"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Open reset link
+                    Reset my password
                   </button>
                   
                   <div className="relative">
@@ -137,7 +136,7 @@ const ForgotPassword = () => {
               )}
               
               <p className="text-slate-500 text-sm mb-6">
-                The link will expire in 30 minutes. If you don't see the email, check your spam folder.
+                This link will expire in 30 minutes for security purposes.
               </p>
               <button
                 data-testid="back-to-signin-btn"
