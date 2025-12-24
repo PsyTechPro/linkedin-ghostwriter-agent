@@ -390,7 +390,7 @@ const DemoMode = () => {
                     ) : (
                       <li>• Using a <strong className="text-slate-300">sample voice profile</strong> — <button onClick={() => navigate("/onboarding")} className="text-teal-400 hover:text-teal-300 underline">train yours free</button></li>
                     )}
-                    <li>• <strong className="text-slate-300">Sign up</strong> for unlimited generations & saved drafts</li>
+                    <li>• <strong className="text-slate-300">Sign up</strong> for 10 free posts & saved drafts</li>
                   </ul>
                 </div>
               </div>
