@@ -261,6 +261,34 @@ async def login(credentials: UserLogin):
 async def get_me(user: dict = Depends(get_current_user)):
     return UserResponse(**user)
 
+@api_router.get("/auth/usage")
+async def get_usage_stats(user: dict = Depends(get_current_user)):
+    """Get user's usage statistics including post limits"""
+    user_email = user.get("email", "")
+    is_admin = is_admin_user(user_email)
+    
+    if is_admin:
+        return {
+            "posts_generated": 0,
+            "posts_limit": -1,  # -1 indicates unlimited
+            "posts_remaining": -1,
+            "is_admin": True,
+            "limit_reached": False
+        }
+    
+    # Get current usage from database
+    user_doc = await db.users.find_one({"id": user["id"]}, {"_id": 0, "posts_generated": 1})
+    posts_generated = user_doc.get("posts_generated", 0) if user_doc else 0
+    posts_remaining = max(0, FREE_POST_LIMIT - posts_generated)
+    
+    return {
+        "posts_generated": posts_generated,
+        "posts_limit": FREE_POST_LIMIT,
+        "posts_remaining": posts_remaining,
+        "is_admin": False,
+        "limit_reached": posts_generated >= FREE_POST_LIMIT
+    }
+
 @api_router.post("/auth/forgot-password")
 async def forgot_password(data: ForgotPasswordRequest, request: Request):
     """Request a password reset email"""
