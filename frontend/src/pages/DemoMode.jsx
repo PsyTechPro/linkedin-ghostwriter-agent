@@ -129,8 +129,8 @@ const DemoMode = () => {
     <div className="min-h-screen bg-[#0B0F12]">
       {/* Demo Mode Banner */}
       <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-b border-amber-500/30">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-2 text-amber-400">
               <Play className="w-4 h-4" />
               <span className="font-medium text-sm">Demo Mode</span>
@@ -142,15 +142,80 @@ const DemoMode = () => {
           <button
             data-testid="demo-signup-btn"
             onClick={handleSignUp}
-            className="text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"
+            className="text-xs sm:text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"
           >
-            Sign up to save posts →
+            Sign up to save →
           </button>
         </div>
       </div>
 
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-[49px] bottom-0 w-64 glass border-r border-white/5 p-6 flex flex-col">
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-semibold text-white font-['Outfit']">Ghostwriter</span>
+        </div>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-2 text-slate-400 hover:text-white"
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-[#0B0F12]/95 pt-16">
+          <div className="p-6 space-y-4">
+            {/* Voice Profile Card */}
+            {demoProfile && (
+              <div className={`card-ghost p-4 ${hasDemoTrainedVoice ? 'border-teal-500/30' : 'border-amber-500/30'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className={`w-4 h-4 ${hasDemoTrainedVoice ? 'text-teal-400' : 'text-amber-400'}`} />
+                  <span className={`text-sm font-medium ${hasDemoTrainedVoice ? 'text-teal-400' : 'text-amber-400'}`}>
+                    {hasDemoTrainedVoice ? 'Your Trained Voice' : 'Sample Voice'}
+                  </span>
+                </div>
+              </div>
+            )}
+            
+            <button
+              onClick={() => { setMobileMenuOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5 text-white"
+            >
+              <Zap className="w-5 h-5" />
+              Generate Posts
+            </button>
+            <button
+              onClick={() => { navigate("/onboarding"); setMobileMenuOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-white/5"
+            >
+              <Sparkles className="w-5 h-5" />
+              Train Your Voice
+            </button>
+            <div className="pt-4 border-t border-white/10 space-y-3">
+              <button
+                onClick={() => { handleSignUp(); setMobileMenuOpen(false); }}
+                className="btn-primary w-full py-2.5 text-sm"
+              >
+                Create Free Account
+              </button>
+              <button
+                onClick={() => { handleExitDemo(); setMobileMenuOpen(false); }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-slate-400 hover:bg-white/5 text-sm"
+              >
+                <LogOut className="w-4 h-4" />
+                Exit Demo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <aside className="hidden lg:flex fixed left-0 top-[49px] bottom-0 w-64 glass border-r border-white/5 p-6 flex-col">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-10">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
@@ -217,8 +282,8 @@ const DemoMode = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="ml-64 pt-[49px] p-8">
+      {/* Main Content - Full width on mobile, offset on desktop */}
+      <main className="lg:ml-64 pt-4 lg:pt-[49px] p-4 sm:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
