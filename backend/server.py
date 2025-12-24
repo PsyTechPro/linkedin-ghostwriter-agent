@@ -30,6 +30,11 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'ghostwriter_secret_key_2024')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
+# Free usage limit config
+FREE_POST_LIMIT = 10  # Maximum posts for free users
+POSTS_PER_GENERATION = 5  # Posts generated per request
+ADMIN_EMAILS = ["eweiser622@gmail.com"]  # Emails with unlimited access
+
 # Create the main app
 app = FastAPI(title="LinkedIn Ghostwriter Agent")
 api_router = APIRouter(prefix="/api")
@@ -38,6 +43,10 @@ security = HTTPBearer()
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+def is_admin_user(email: str) -> bool:
+    """Check if user email is in the admin list"""
+    return email.lower() in [e.lower() for e in ADMIN_EMAILS]
 
 # ============== MODELS ==============
 
