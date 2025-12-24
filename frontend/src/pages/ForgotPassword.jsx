@@ -94,13 +94,13 @@ const ForgotPassword = () => {
                 <CheckCircle className="w-8 h-8 text-teal-400" />
               </div>
               <h1 className="text-2xl font-bold text-white font-['Outfit'] mb-3">
-                Reset link ready
+                {devResetUrl ? "Reset link ready" : "Check your email"}
               </h1>
               <p className="text-slate-400 mb-6">
                 If an account exists for <span className="text-white">{email}</span>, you can use the link below to reset your password.
               </p>
               
-              {/* Reset link */}
+              {/* Reset link - shown when account exists */}
               {devResetUrl && (
                 <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-4 mb-6 text-left">
                   <p className="text-teal-400 text-xs font-medium mb-3">
@@ -135,9 +135,20 @@ const ForgotPassword = () => {
                 </div>
               )}
               
-              <p className="text-slate-500 text-sm mb-6">
-                This link will expire in 30 minutes for security purposes.
-              </p>
+              {/* Helpful message when no reset link appears */}
+              {!devResetUrl && (
+                <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 mb-6">
+                  <p className="text-slate-400 text-sm">
+                    If no reset link appears above, please verify you're using the email you registered with.
+                  </p>
+                </div>
+              )}
+              
+              {devResetUrl && (
+                <p className="text-slate-500 text-sm mb-6">
+                  This link will expire in 30 minutes for security purposes.
+                </p>
+              )}
               <button
                 data-testid="back-to-signin-btn"
                 onClick={() => navigate("/auth")}
