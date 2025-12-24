@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, Zap, LogOut, Copy, RefreshCw, 
-  Loader2, FileText, AlertTriangle, Play
+  Loader2, FileText, AlertTriangle, Play, Menu, X
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -17,6 +17,7 @@ const DemoMode = () => {
   const [generating, setGenerating] = useState(false);
   const [topic, setTopic] = useState("");
   const [audience, setAudience] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const initDemo = async () => {
