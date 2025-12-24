@@ -470,7 +470,7 @@ const DemoMode = () => {
                   Like what you see?
                 </h3>
                 <p className="text-slate-400 mb-6">
-                  Create a free account to train your own voice and save unlimited posts
+                  Create a free account to train your own voice and get 10 free posts
                 </p>
                 <button
                   data-testid="demo-cta-signup-btn"
