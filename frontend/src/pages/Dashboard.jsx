@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, Zap, Settings, LogOut, Heart, Copy, RefreshCw, 
-  Edit3, Trash2, Check, X, Loader2, Star, FileText
+  Edit3, Trash2, Check, X, Loader2, Star, FileText, Menu
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -21,6 +21,7 @@ const Dashboard = () => {
   const [editingId, setEditingId] = useState(null);
   const [editContent, setEditContent] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchPosts();
