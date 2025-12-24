@@ -338,7 +338,7 @@ const Dashboard = () => {
                 {usageStats.limit_reached ? (
                   <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
                     <p className="text-amber-400 text-sm font-medium mb-1">
-                      You've reached the free limit of {usageStats.posts_limit} generated posts.
+                      You&apos;ve reached the free limit of {usageStats.posts_limit} generated posts.
                     </p>
                     <p className="text-slate-400 text-xs">
                       Upgrade to continue generating posts.
