@@ -154,7 +154,7 @@ const ForgotPassword = () => {
                 Forgot your password?
               </h1>
               <p className="text-slate-400 mb-6">
-                No worries! Enter your email and we'll send you a secure link to reset your password.
+                No worries! Enter your email and we'll provide you with a secure link to reset your password.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -176,7 +176,7 @@ const ForgotPassword = () => {
                     />
                   </div>
                   <p className="text-xs text-slate-500 mt-2">
-                    We'll email you a secure link to reset your password.
+                    Enter the email associated with your account.
                   </p>
                 </div>
 
@@ -189,10 +189,10 @@ const ForgotPassword = () => {
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Sending...
+                      Processing...
                     </>
                   ) : (
-                    "Send reset link"
+                    "Get reset link"
                   )}
                 </button>
               </form>
