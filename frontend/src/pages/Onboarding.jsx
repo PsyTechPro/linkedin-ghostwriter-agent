@@ -219,7 +219,7 @@ const Onboarding = () => {
               onClick={() => navigate("/auth")}
               className="text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"
             >
-              Sign up for unlimited →
+              Sign up for 10 free posts →
             </button>
           </div>
         </div>
