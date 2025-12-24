@@ -196,11 +196,16 @@ const Auth = () => {
               )}
             </button>
             
-            {/* Privacy notice - only on signup */}
+            {/* Free posts notice and privacy notice - only on signup */}
             {!isLogin && (
-              <p className="text-xs text-slate-500 text-center mt-3">
-                We respect your privacy. Your email will never be shared and is used only for account access.
-              </p>
+              <div className="text-center mt-3 space-y-1">
+                <p className="text-xs text-teal-400">
+                  Start with 10 free generated posts
+                </p>
+                <p className="text-xs text-slate-500">
+                  We respect your privacy. Your email will never be shared and is used only for account access.
+                </p>
+              </div>
             )}
           </form>
 
