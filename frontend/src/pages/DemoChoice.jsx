@@ -153,7 +153,7 @@ const DemoChoice = () => {
 
         {/* Footer note */}
         <p className="text-center text-slate-500 text-sm mt-8">
-          Demo posts are not saved. <button onClick={() => navigate("/auth")} className="text-teal-400 hover:text-teal-300">Sign up free</button> for unlimited access.
+          Demo posts are not saved. <button onClick={() => navigate("/auth")} className="text-teal-400 hover:text-teal-300">Sign up free</button> to save posts and get 10 free generations.
         </p>
       </motion.div>
     </div>
