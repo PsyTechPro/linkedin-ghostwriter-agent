@@ -7,19 +7,44 @@ import { useAuth } from "../App";
 
 const DemoChoice = () => {
   const navigate = useNavigate();
-  const { enterDemoMode } = useAuth();
+  const { enterDemoMode, isDemoMode, demoProfile } = useAuth();
   const [loading, setLoading] = useState(null); // 'quick' or 'train'
 
+  // PHASE 1 LOGGING: Log state on every render
+  useEffect(() => {
+    console.log("[DEMO-CHOICE] Component mounted/updated", {
+      isDemoMode,
+      hasDemoProfile: !!demoProfile,
+      demoProfileTrained: demoProfile?._trained,
+      localStorage: Object.keys(localStorage),
+      sessionStorage: Object.keys(sessionStorage)
+    });
+  }, [isDemoMode, demoProfile]);
+
   const handleQuickDemo = async () => {
+    console.log("[DEMO-CHOICE] Quick Demo clicked - BEFORE enterDemoMode", {
+      isDemoMode,
+      hasDemoProfile: !!demoProfile,
+      localStorage: Object.keys(localStorage),
+      sessionStorage: Object.keys(sessionStorage)
+    });
+    
     setLoading('quick');
     try {
       const success = await enterDemoMode();
+      console.log("[DEMO-CHOICE] enterDemoMode returned", { success });
+      
       if (success) {
+        // Generate a unique run ID for this demo session
+        const demoRunId = Date.now().toString();
+        sessionStorage.setItem('demoRunId', demoRunId);
+        console.log("[DEMO-CHOICE] Set demoRunId:", demoRunId, "navigating to /demo");
         navigate("/demo");
       } else {
         toast.error("Failed to start demo");
       }
     } catch (e) {
+      console.error("[DEMO-CHOICE] Error in handleQuickDemo:", e);
       toast.error("Something went wrong");
     } finally {
       setLoading(null);
