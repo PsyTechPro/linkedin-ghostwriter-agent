@@ -124,22 +124,43 @@ const DemoMode = () => {
   };
 
   const handleExitDemo = () => {
+    console.log("[DEMO-MODE] handleExitDemo called");
     exitDemoMode();
-    // Navigate to landing page (demo entry point)
     navigate("/");
   };
 
   const handleSignUp = () => {
+    console.log("[DEMO-MODE] handleSignUp called");
     exitDemoMode();
     navigate("/auth");
   };
 
   // Clear posts when exiting demo (component-level state)
   const handleFullExit = () => {
-    setPosts([]); // Clear generated posts
+    console.log("[DEMO-MODE] handleFullExit - BEFORE clearing", {
+      isDemoMode,
+      hasDemoProfile: !!demoProfile,
+      postsCount: posts.length,
+      localStorage: Object.keys(localStorage),
+      sessionStorage: Object.keys(sessionStorage)
+    });
+    
+    // Clear component state
+    setPosts([]);
     setTopic("");
     setAudience("");
+    
+    // Clear session storage demo keys
+    sessionStorage.removeItem('demoRunId');
+    
+    // Call context reset
     exitDemoMode();
+    
+    console.log("[DEMO-MODE] handleFullExit - AFTER clearing", {
+      localStorage: Object.keys(localStorage),
+      sessionStorage: Object.keys(sessionStorage)
+    });
+    
     navigate("/");
   };
 
