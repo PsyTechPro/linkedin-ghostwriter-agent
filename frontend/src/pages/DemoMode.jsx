@@ -124,44 +124,22 @@ const DemoMode = () => {
   };
 
   const handleExitDemo = () => {
-    console.log("[DEMO-MODE] handleExitDemo called");
-    exitDemoMode();
-    navigate("/");
+    console.log("[DEMO-MODE] handleExitDemo called - using hardResetDemo");
+    hardResetDemo(); // This will clear all state and do window.location.assign('/demo-choice')
   };
 
   const handleSignUp = () => {
     console.log("[DEMO-MODE] handleSignUp called");
+    // Clear demo state then go to auth
+    sessionStorage.removeItem('demoRunId');
     exitDemoMode();
-    navigate("/auth");
+    window.location.assign('/auth');
   };
 
-  // Clear posts when exiting demo (component-level state)
+  // Exit demo with full hard reset
   const handleFullExit = () => {
-    console.log("[DEMO-MODE] handleFullExit - BEFORE clearing", {
-      isDemoMode,
-      hasDemoProfile: !!demoProfile,
-      postsCount: posts.length,
-      localStorage: Object.keys(localStorage),
-      sessionStorage: Object.keys(sessionStorage)
-    });
-    
-    // Clear component state
-    setPosts([]);
-    setTopic("");
-    setAudience("");
-    
-    // Clear session storage demo keys
-    sessionStorage.removeItem('demoRunId');
-    
-    // Call context reset
-    exitDemoMode();
-    
-    console.log("[DEMO-MODE] handleFullExit - AFTER clearing", {
-      localStorage: Object.keys(localStorage),
-      sessionStorage: Object.keys(sessionStorage)
-    });
-    
-    navigate("/");
+    console.log("[DEMO-MODE] handleFullExit - calling hardResetDemo");
+    hardResetDemo(); // This will clear all state and do window.location.assign('/demo-choice')
   };
 
   if (loading) {
