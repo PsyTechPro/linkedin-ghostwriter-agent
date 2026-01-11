@@ -95,6 +95,7 @@ const AuthProvider = ({ children }) => {
       const res = await axios.get(`${API}/demo/sample-profile`);
       setDemoProfile(res.data.extracted_profile);
       setIsDemoMode(true);
+      setDemoSessionId(Date.now().toString()); // New session ID each time
       setUser({ name: "Demo User", email: "demo@example.com", id: "demo" });
       return true;
     } catch (e) {
@@ -103,10 +104,26 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const exitDemoMode = () => {
+  // Full demo state reset - clears everything for a fresh demo experience
+  const resetDemoSession = () => {
     setIsDemoMode(false);
     setDemoProfile(null);
+    setDemoSessionId(null);
     setUser(null);
+    // Clear any demo-related localStorage/sessionStorage keys if they exist
+    try {
+      sessionStorage.removeItem('demoStarted');
+      sessionStorage.removeItem('demoVoiceSelected');
+      sessionStorage.removeItem('demoOnboardingStep');
+      localStorage.removeItem('demoProfile');
+    } catch (e) {
+      // Ignore storage errors
+    }
+  };
+
+  const exitDemoMode = () => {
+    // Use the full reset function
+    resetDemoSession();
   };
 
   const updateVoiceProfile = (profile) => {
