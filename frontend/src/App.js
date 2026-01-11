@@ -136,44 +136,75 @@ const AuthProvider = ({ children }) => {
     setDemoSessionId(null);
     setUser(null);
     
-    // Clear ALL demo-related localStorage/sessionStorage keys
-    const demoKeyPatterns = ['demo', 'voice', 'sample', 'onboarding', 'step', 'wizard', 'profile'];
+    // Comprehensive list of patterns to clear
+    const clearPatterns = [
+      'demo', 'voice', 'sample', 'onboarding', 'step', 'wizard', 
+      'profile', 'topic', 'audience', 'hasSeen', 'selected', 'mode',
+      'sb-', 'supabase', 'auth-token' // Supabase-related keys if any
+    ];
     
-    // Clear localStorage
-    for (const key of Object.keys(localStorage)) {
+    // Clear localStorage - iterate over a copy of keys
+    const localKeys = [...Object.keys(localStorage)];
+    for (const key of localKeys) {
       const keyLower = key.toLowerCase();
-      if (demoKeyPatterns.some(pattern => keyLower.includes(pattern))) {
-        console.log("[AUTH] Removing localStorage key:", key);
+      if (clearPatterns.some(pattern => keyLower.includes(pattern.toLowerCase()))) {
+        console.log("[AUTH] Clearing localStorage key:", key);
         localStorage.removeItem(key);
       }
     }
     
-    // Clear sessionStorage
-    for (const key of Object.keys(sessionStorage)) {
+    // Clear sessionStorage - iterate over a copy of keys
+    const sessionKeys = [...Object.keys(sessionStorage)];
+    for (const key of sessionKeys) {
       const keyLower = key.toLowerCase();
-      if (demoKeyPatterns.some(pattern => keyLower.includes(pattern))) {
-        console.log("[AUTH] Removing sessionStorage key:", key);
+      if (clearPatterns.some(pattern => keyLower.includes(pattern.toLowerCase()))) {
+        console.log("[AUTH] Clearing sessionStorage key:", key);
         sessionStorage.removeItem(key);
       }
     }
     
-    // Also clear specific known keys
-    sessionStorage.removeItem('demoRunId');
-    sessionStorage.removeItem('demoStarted');
-    sessionStorage.removeItem('demoVoiceSelected');
-    sessionStorage.removeItem('demoOnboardingStep');
-    localStorage.removeItem('demoProfile');
+    // Explicitly clear known keys
+    const explicitKeys = [
+      'demoRunId', 'demoStarted', 'demoVoiceSelected', 'demoOnboardingStep',
+      'demoProfile', 'isDemoMode', 'sampleVoice', 'voiceProfile',
+      'demoTopic', 'demoAudience', 'hasSeenDemo'
+    ];
+    explicitKeys.forEach(key => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
     
     console.log("[AUTH] resetDemoSession - AFTER", {
+      isDemoMode: false,
+      demoProfile: null,
       localStorage: Object.keys(localStorage),
       sessionStorage: Object.keys(sessionStorage)
     });
   };
 
-  const exitDemoMode = () => {
-    console.log("[AUTH] exitDemoMode called");
-    // Use the full reset function
+  // Hard reset and redirect - used by Exit Demo button
+  // Uses window.location.assign for a full page reload to guarantee clean state
+  const hardResetDemo = () => {
+    console.log("[AUTH] hardResetDemo - Starting hard reset");
+    
+    // First clear all state
     resetDemoSession();
+    
+    // Clear token if it's a demo token
+    if (user?.id === 'demo') {
+      localStorage.removeItem('token');
+      setToken(null);
+    }
+    
+    console.log("[AUTH] hardResetDemo - State cleared, forcing navigation to /demo-choice");
+    
+    // Force a full page reload to /demo-choice to guarantee clean SPA state
+    window.location.assign('/demo-choice');
+  };
+
+  const exitDemoMode = () => {
+    console.log("[AUTH] exitDemoMode called - using hardResetDemo");
+    hardResetDemo();
   };
 
   const updateVoiceProfile = (profile) => {
