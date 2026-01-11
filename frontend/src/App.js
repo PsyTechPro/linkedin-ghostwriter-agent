@@ -91,15 +91,31 @@ const AuthProvider = ({ children }) => {
   };
 
   const enterDemoMode = async () => {
+    console.log("[AUTH] enterDemoMode called - BEFORE", {
+      isDemoMode,
+      hasDemoProfile: !!demoProfile,
+      localStorage: Object.keys(localStorage),
+      sessionStorage: Object.keys(sessionStorage)
+    });
+    
     try {
       const res = await axios.get(`${API}/demo/sample-profile`);
+      const newSessionId = Date.now().toString();
+      
       setDemoProfile(res.data.extracted_profile);
       setIsDemoMode(true);
-      setDemoSessionId(Date.now().toString()); // New session ID each time
+      setDemoSessionId(newSessionId);
       setUser({ name: "Demo User", email: "demo@example.com", id: "demo" });
+      
+      console.log("[AUTH] enterDemoMode success - AFTER", {
+        isDemoMode: true,
+        hasDemoProfile: true,
+        demoSessionId: newSessionId
+      });
+      
       return true;
     } catch (e) {
-      console.error("Failed to enter demo mode:", e);
+      console.error("[AUTH] enterDemoMode failed:", e);
       return false;
     }
   };
