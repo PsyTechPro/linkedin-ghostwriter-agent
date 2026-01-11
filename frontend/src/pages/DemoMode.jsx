@@ -21,13 +21,33 @@ const DemoMode = () => {
 
   useEffect(() => {
     const initDemo = async () => {
+      const currentRunId = sessionStorage.getItem('demoRunId');
+      
+      console.log("[DEMO-MODE] initDemo called", {
+        isDemoMode,
+        hasDemoProfile: !!demoProfile,
+        demoProfileTrained: demoProfile?._trained,
+        currentRunId,
+        localStorage: Object.keys(localStorage),
+        sessionStorage: Object.keys(sessionStorage)
+      });
+      
       // Defensive guard: If we're not in demo mode or don't have a profile,
       // redirect to demo-choice instead of auto-entering
       if (!isDemoMode || !demoProfile) {
-        // Don't auto-enter - require user to go through demo-choice
+        console.log("[DEMO-MODE] No demo session, redirecting to /demo-choice");
         navigate("/demo-choice");
         return;
       }
+      
+      // Check if there's a valid demoRunId - if not, redirect
+      if (!currentRunId) {
+        console.log("[DEMO-MODE] No demoRunId found, redirecting to /demo-choice");
+        navigate("/demo-choice");
+        return;
+      }
+      
+      console.log("[DEMO-MODE] Valid demo session, proceeding");
       setLoading(false);
     };
     initDemo();
