@@ -282,7 +282,7 @@ const DemoMode = () => {
           </button>
           <button
             data-testid="demo-exit-btn"
-            onClick={handleExitDemo}
+            onClick={handleFullExit}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-slate-400 hover:bg-white/5 hover:text-white transition-colors text-sm"
           >
             <LogOut className="w-4 h-4" />
