@@ -141,7 +141,8 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{ 
       user, token, loading, login, register, logout, 
       voiceProfile, updateVoiceProfile, isAuthenticated: !!user,
-      isDemoMode, demoProfile, enterDemoMode, exitDemoMode, updateDemoProfile, hasDemoTrainedVoice
+      isDemoMode, demoProfile, enterDemoMode, exitDemoMode, updateDemoProfile, 
+      hasDemoTrainedVoice, resetDemoSession, demoSessionId
     }}>
       {children}
     </AuthContext.Provider>
