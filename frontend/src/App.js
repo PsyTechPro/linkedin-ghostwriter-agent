@@ -106,22 +106,56 @@ const AuthProvider = ({ children }) => {
 
   // Full demo state reset - clears everything for a fresh demo experience
   const resetDemoSession = () => {
+    console.log("[AUTH] resetDemoSession - BEFORE", {
+      isDemoMode,
+      hasDemoProfile: !!demoProfile,
+      demoSessionId,
+      localStorage: Object.keys(localStorage),
+      sessionStorage: Object.keys(sessionStorage)
+    });
+    
+    // Clear React state
     setIsDemoMode(false);
     setDemoProfile(null);
     setDemoSessionId(null);
     setUser(null);
-    // Clear any demo-related localStorage/sessionStorage keys if they exist
-    try {
-      sessionStorage.removeItem('demoStarted');
-      sessionStorage.removeItem('demoVoiceSelected');
-      sessionStorage.removeItem('demoOnboardingStep');
-      localStorage.removeItem('demoProfile');
-    } catch (e) {
-      // Ignore storage errors
+    
+    // Clear ALL demo-related localStorage/sessionStorage keys
+    const demoKeyPatterns = ['demo', 'voice', 'sample', 'onboarding', 'step', 'wizard', 'profile'];
+    
+    // Clear localStorage
+    for (const key of Object.keys(localStorage)) {
+      const keyLower = key.toLowerCase();
+      if (demoKeyPatterns.some(pattern => keyLower.includes(pattern))) {
+        console.log("[AUTH] Removing localStorage key:", key);
+        localStorage.removeItem(key);
+      }
     }
+    
+    // Clear sessionStorage
+    for (const key of Object.keys(sessionStorage)) {
+      const keyLower = key.toLowerCase();
+      if (demoKeyPatterns.some(pattern => keyLower.includes(pattern))) {
+        console.log("[AUTH] Removing sessionStorage key:", key);
+        sessionStorage.removeItem(key);
+      }
+    }
+    
+    // Also clear specific known keys
+    sessionStorage.removeItem('demoRunId');
+    sessionStorage.removeItem('demoStarted');
+    sessionStorage.removeItem('demoVoiceSelected');
+    sessionStorage.removeItem('demoOnboardingStep');
+    localStorage.removeItem('demoProfile');
+    
+    console.log("[AUTH] resetDemoSession - AFTER", {
+      localStorage: Object.keys(localStorage),
+      sessionStorage: Object.keys(sessionStorage)
+    });
   };
 
   const exitDemoMode = () => {
+    console.log("[AUTH] exitDemoMode called");
     // Use the full reset function
     resetDemoSession();
   };
