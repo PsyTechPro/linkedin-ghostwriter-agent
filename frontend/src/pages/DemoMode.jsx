@@ -21,18 +21,17 @@ const DemoMode = () => {
 
   useEffect(() => {
     const initDemo = async () => {
-      if (!isDemoMode) {
-        const success = await enterDemoMode();
-        if (!success) {
-          toast.error("Failed to start demo");
-          navigate("/");
-          return;
-        }
+      // Defensive guard: If we're not in demo mode or don't have a profile,
+      // redirect to demo-choice instead of auto-entering
+      if (!isDemoMode || !demoProfile) {
+        // Don't auto-enter - require user to go through demo-choice
+        navigate("/demo-choice");
+        return;
       }
       setLoading(false);
     };
     initDemo();
-  }, []);
+  }, [isDemoMode, demoProfile, navigate]);
 
   const generatePosts = async () => {
     if (!topic.trim()) {
