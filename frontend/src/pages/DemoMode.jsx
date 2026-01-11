@@ -11,7 +11,7 @@ import { useAuth, API } from "../App";
 
 const DemoMode = () => {
   const navigate = useNavigate();
-  const { isDemoMode, demoProfile, enterDemoMode, exitDemoMode, hasDemoTrainedVoice } = useAuth();
+  const { isDemoMode, demoProfile, enterDemoMode, exitDemoMode, hasDemoTrainedVoice, hardResetDemo } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -36,14 +36,14 @@ const DemoMode = () => {
       // redirect to demo-choice instead of auto-entering
       if (!isDemoMode || !demoProfile) {
         console.log("[DEMO-MODE] No demo session, redirecting to /demo-choice");
-        navigate("/demo-choice");
+        navigate("/demo-choice", { replace: true });
         return;
       }
       
       // Check if there's a valid demoRunId - if not, redirect
       if (!currentRunId) {
         console.log("[DEMO-MODE] No demoRunId found, redirecting to /demo-choice");
-        navigate("/demo-choice");
+        navigate("/demo-choice", { replace: true });
         return;
       }
       
