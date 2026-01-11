@@ -33,6 +33,7 @@ const AuthProvider = ({ children }) => {
   const [voiceProfile, setVoiceProfile] = useState(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoProfile, setDemoProfile] = useState(null);
+  const [demoSessionId, setDemoSessionId] = useState(null); // Track demo session for proper reset
 
   useEffect(() => {
     const checkAuth = async () => {
