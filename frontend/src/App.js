@@ -223,7 +223,7 @@ const AuthProvider = ({ children }) => {
       user, token, loading, login, register, logout, 
       voiceProfile, updateVoiceProfile, isAuthenticated: !!user,
       isDemoMode, demoProfile, enterDemoMode, exitDemoMode, updateDemoProfile, 
-      hasDemoTrainedVoice, resetDemoSession, demoSessionId
+      hasDemoTrainedVoice, resetDemoSession, demoSessionId, hardResetDemo
     }}>
       {children}
     </AuthContext.Provider>
