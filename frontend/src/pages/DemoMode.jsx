@@ -105,12 +105,22 @@ const DemoMode = () => {
 
   const handleExitDemo = () => {
     exitDemoMode();
+    // Navigate to landing page (demo entry point)
     navigate("/");
   };
 
   const handleSignUp = () => {
     exitDemoMode();
     navigate("/auth");
+  };
+
+  // Clear posts when exiting demo (component-level state)
+  const handleFullExit = () => {
+    setPosts([]); // Clear generated posts
+    setTopic("");
+    setAudience("");
+    exitDemoMode();
+    navigate("/");
   };
 
   if (loading) {
