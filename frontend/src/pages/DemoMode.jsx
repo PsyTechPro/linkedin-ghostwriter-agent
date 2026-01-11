@@ -212,7 +212,7 @@ const DemoMode = () => {
                 Create Free Account
               </button>
               <button
-                onClick={() => { handleExitDemo(); setMobileMenuOpen(false); }}
+                onClick={() => { handleFullExit(); setMobileMenuOpen(false); }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-slate-400 hover:bg-white/5 text-sm"
               >
                 <LogOut className="w-4 h-4" />
