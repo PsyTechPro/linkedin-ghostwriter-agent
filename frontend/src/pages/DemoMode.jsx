@@ -59,9 +59,19 @@ const DemoMode = () => {
       return;
     }
 
+    // Check for owner secret word
+    if (checkOwnerSecret(topic)) {
+      enableOwnerMode();
+      toast.success("🔓 Owner Mode activated! Unlimited demo access enabled for 30 days.", {
+        duration: 5000
+      });
+      setTopic(""); // Clear the secret word
+      return; // Don't generate posts, just activate owner mode
+    }
+
     setGenerating(true);
     try {
-      console.log("[Demo] Generating posts for topic:", topic, "hasDemoTrainedVoice:", hasDemoTrainedVoice);
+      console.log("[Demo] Generating posts for topic:", topic, "hasDemoTrainedVoice:", hasDemoTrainedVoice, "isOwnerMode:", isOwnerMode);
       
       let res;
       if (hasDemoTrainedVoice && demoProfile) {
