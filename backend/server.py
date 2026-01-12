@@ -1075,15 +1075,24 @@ async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest, request: Request):
     """Analyze voice in demo mode without authentication (rate limited)"""
     from emergentintegrations.llm.chat import LlmChat, UserMessage
     
-    # Check rate limit
-    client_ip = request.client.host if request.client else "unknown"
-    allowed, remaining = await check_demo_voice_limit(client_ip)
+    # Check for owner mode bypass header
+    owner_mode = request.headers.get('X-LAG-Owner-Mode') == 'true'
     
-    if not allowed:
-        raise HTTPException(
-            status_code=429, 
-            detail="You've reached the demo limit (2 voice trainings per day). Sign up free for unlimited access!"
-        )
+    # Check rate limit (skip if owner mode)
+    client_ip = request.client.host if request.client else "unknown"
+    remaining = DEMO_VOICE_LIMIT_PER_DAY
+    
+    if not owner_mode:
+        allowed, remaining = await check_demo_voice_limit(client_ip)
+        
+        if not allowed:
+            raise HTTPException(
+                status_code=429, 
+                detail="You've reached the demo limit (2 voice trainings per day). Sign up free for unlimited access!"
+            )
+        logger.info(f"Demo voice training for IP {client_ip} - {remaining} attempts remaining after this")
+    else:
+        logger.info(f"Demo voice training for IP {client_ip} - OWNER MODE BYPASS (no limit)")
     
     api_key = os.environ.get('EMERGENT_LLM_KEY')
     if not api_key:
@@ -1091,8 +1100,6 @@ async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest, request: Request):
     
     if not data.raw_samples or len(data.raw_samples) < 100:
         raise HTTPException(status_code=400, detail="Please provide at least 100 characters of sample posts")
-    
-    logger.info(f"Demo voice training for IP {client_ip} - {remaining} attempts remaining after this")
     
     # Analyze voice using GPT-5.1
     chat = LlmChat(
