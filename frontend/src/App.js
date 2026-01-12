@@ -275,7 +275,8 @@ const AuthProvider = ({ children }) => {
       user, token, loading, login, register, logout, 
       voiceProfile, updateVoiceProfile, isAuthenticated: !!user,
       isDemoMode, demoProfile, enterDemoMode, exitDemoMode, updateDemoProfile, 
-      hasDemoTrainedVoice, resetDemoSession, demoSessionId, hardResetDemo
+      hasDemoTrainedVoice, resetDemoSession, demoSessionId, hardResetDemo,
+      isOwnerMode, enableOwnerMode, disableOwnerMode, checkOwnerSecret
     }}>
       {children}
     </AuthContext.Provider>
