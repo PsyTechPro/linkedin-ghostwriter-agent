@@ -1118,6 +1118,7 @@ async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest, request: Request):
         api_key=api_key,
         session_id=f"demo-voice-analysis-{uuid.uuid4()}",
         system_message="""You are a LinkedIn writing style analyst. Analyze the provided sample posts and extract:
+
 1. Tone (professional, casual, inspirational, provocative, etc.)
 2. Structure patterns (how they open, format paragraphs, use line breaks)
 3. Hook style (question, statement, statistic, story opener)
@@ -1125,8 +1126,16 @@ async def demo_analyze_voice(data: DemoVoiceAnalyzeRequest, request: Request):
 5. Common themes and topics
 6. Do's (things they consistently do)
 7. Don'ts (things they avoid)
+8. Descriptive Summary - A rich, human-readable 1-2 paragraph description of how this person writes. Be CONCRETE and SPECIFIC about:
+   - Sentence rhythm and pacing (short punchy sentences? flowing paragraphs?)
+   - Rhetorical habits (questions? lists? bold claims? stories?)
+   - Confidence level and stance (authoritative? humble? provocative?)
+   - Emotional register (warm? detached? passionate?)
+   - Signature patterns that make this voice distinctive
 
-Return a JSON object with these fields: tone, structure, hook_style, cta_style, themes, dos, donts, summary"""
+Return a JSON object with these fields: tone, structure, hook_style, cta_style, themes, dos, donts, descriptive_summary
+
+The descriptive_summary field should be 1-2 paragraphs (150-250 words) written in natural language explaining HOW this person writes, not just labels."""
     ).with_model("openai", "gpt-5.1")
     
     try:
@@ -1134,7 +1143,7 @@ Return a JSON object with these fields: tone, structure, hook_style, cta_style, 
 
 {data.raw_samples}
 
-Return ONLY a valid JSON object with the analysis."""
+Return ONLY a valid JSON object with the analysis. Make the descriptive_summary field rich and specific - describe the actual voice, rhythm, and patterns you observe."""
         
         response = await chat.send_message(UserMessage(text=analysis_prompt))
         
@@ -1145,6 +1154,9 @@ Return ONLY a valid JSON object with the analysis."""
             json_end = response.rfind('}') + 1
             if json_start >= 0 and json_end > json_start:
                 extracted_profile = json.loads(response[json_start:json_end])
+                # Ensure descriptive_summary is present
+                if 'descriptive_summary' not in extracted_profile:
+                    extracted_profile['descriptive_summary'] = extracted_profile.get('summary', 'Voice profile analysis completed.')
             else:
                 raise ValueError("No JSON found")
         except (json.JSONDecodeError, ValueError):
@@ -1156,7 +1168,7 @@ Return ONLY a valid JSON object with the analysis."""
                 "themes": ["business", "personal growth"],
                 "dos": ["Use line breaks", "Be authentic"],
                 "donts": ["Avoid jargon"],
-                "summary": response[:500] if response else "Analysis completed"
+                "descriptive_summary": response[:500] if response else "Voice profile analysis completed."
             }
     except Exception as e:
         logger.error(f"Demo voice analysis error: {e}")
