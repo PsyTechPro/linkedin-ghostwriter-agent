@@ -35,56 +35,40 @@ const AuthProvider = ({ children }) => {
   const [demoProfile, setDemoProfile] = useState(null);
   const [demoSessionId, setDemoSessionId] = useState(null); // Track demo session for proper reset
 
-  // Owner Mode - secret bypass for demo limits
-  const OWNER_SECRET = "OWNER"; // Secret word to activate owner mode
-  const OWNER_MODE_KEY = "ownerModeEnabled";
-  const OWNER_MODE_EXPIRY_KEY = "ownerModeExpiry";
-  const OWNER_MODE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days in ms
+  // Owner Mode - secret bypass for ALL demo limits (frontend + backend)
+  const OWNER_SECRET = "LAG_OWNER_ENABLE"; // Secret phrase to activate owner mode
+  const OWNER_MODE_KEY = "lag_owner_mode"; // localStorage key
 
-  // Check if owner mode is active and not expired
+  // Check if owner mode is active
   const checkOwnerMode = () => {
     try {
-      const enabled = localStorage.getItem(OWNER_MODE_KEY);
-      const expiry = localStorage.getItem(OWNER_MODE_EXPIRY_KEY);
-      if (enabled === 'true' && expiry) {
-        const expiryTime = parseInt(expiry, 10);
-        if (Date.now() < expiryTime) {
-          return true;
-        } else {
-          // Expired, clear it
-          localStorage.removeItem(OWNER_MODE_KEY);
-          localStorage.removeItem(OWNER_MODE_EXPIRY_KEY);
-        }
-      }
+      return localStorage.getItem(OWNER_MODE_KEY) === 'true';
     } catch (e) {
       console.error("[AUTH] Error checking owner mode:", e);
+      return false;
     }
-    return false;
   };
 
   const [isOwnerMode, setIsOwnerMode] = useState(checkOwnerMode);
 
-  // Enable owner mode for 30 days
+  // Enable owner mode permanently (until manually disabled)
   const enableOwnerMode = () => {
-    const expiry = Date.now() + OWNER_MODE_DURATION;
     localStorage.setItem(OWNER_MODE_KEY, 'true');
-    localStorage.setItem(OWNER_MODE_EXPIRY_KEY, expiry.toString());
     setIsOwnerMode(true);
-    console.log("[AUTH] Owner Mode ENABLED - expires:", new Date(expiry).toISOString());
+    console.log("[AUTH] LAG Owner Mode ENABLED - demo limits bypassed");
     return true;
   };
 
   // Disable owner mode
   const disableOwnerMode = () => {
     localStorage.removeItem(OWNER_MODE_KEY);
-    localStorage.removeItem(OWNER_MODE_EXPIRY_KEY);
     setIsOwnerMode(false);
-    console.log("[AUTH] Owner Mode DISABLED");
+    console.log("[AUTH] LAG Owner Mode DISABLED");
   };
 
-  // Check if input matches the owner secret
+  // Check if input matches the owner secret phrase
   const checkOwnerSecret = (input) => {
-    return input && input.trim().toUpperCase() === OWNER_SECRET;
+    return input && input.trim() === OWNER_SECRET;
   };
 
   useEffect(() => {
