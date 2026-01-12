@@ -88,6 +88,11 @@ const Onboarding = () => {
       const endpoint = isDemoMode ? `${API}/demo/analyze-voice` : `${API}/voice-profile/analyze`;
       const headers = isDemoMode ? {} : { Authorization: `Bearer ${token}` };
       
+      // Add owner mode header if active (bypasses rate limits on backend)
+      if (isOwnerMode) {
+        headers['X-LAG-Owner-Mode'] = 'true';
+      }
+      
       const res = await axios.post(
         endpoint,
         { raw_samples: samplePosts, settings },
@@ -95,10 +100,10 @@ const Onboarding = () => {
       );
       setExtractedProfile(res.data.extracted_profile);
       
-      // Update remaining attempts for demo mode
-      if (isDemoMode && res.data.remaining !== undefined) {
+      // Update remaining attempts for demo mode (skip if owner mode)
+      if (isDemoMode && !isOwnerMode && res.data.remaining !== undefined) {
         setDemoAttemptsRemaining(res.data.remaining);
-      } else if (isDemoMode) {
+      } else if (isDemoMode && !isOwnerMode) {
         // Decrement locally if not returned
         setDemoAttemptsRemaining(prev => prev !== null ? Math.max(0, prev - 1) : null);
       }
@@ -115,8 +120,8 @@ const Onboarding = () => {
     } catch (e) {
       const errorMsg = e.response?.data?.detail || "Failed to analyze voice";
       
-      // Check if it's a rate limit error (429)
-      if (e.response?.status === 429) {
+      // Check if it's a rate limit error (429) - never happens in owner mode
+      if (e.response?.status === 429 && !isOwnerMode) {
         setDemoAttemptsRemaining(0);
         toast.error(errorMsg, {
           duration: 6000,
