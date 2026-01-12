@@ -88,7 +88,7 @@ const renderListItems = (items) => {
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { user, token, logout, voiceProfile, updateVoiceProfile } = useAuth();
+  const { user, token, logout, voiceProfile, updateVoiceProfile, isOwnerMode, disableOwnerMode } = useAuth();
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
     post_length: "medium",
