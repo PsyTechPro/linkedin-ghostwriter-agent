@@ -249,13 +249,13 @@ const Settings = () => {
                 )}
                 {extractedProfile?.dos && (
                   <div className="bg-black/20 rounded-lg p-4">
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Do's</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Dos</p>
                     {renderListItems(extractedProfile.dos)}
                   </div>
                 )}
                 {extractedProfile?.donts && (
                   <div className="bg-black/20 rounded-lg p-4">
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Don'ts</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Donts</p>
                     {renderListItems(extractedProfile.donts)}
                   </div>
                 )}
