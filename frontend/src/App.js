@@ -180,8 +180,10 @@ const AuthProvider = ({ children }) => {
     ];
     
     // Clear localStorage - iterate over a copy of keys
+    // IMPORTANT: Do NOT clear lag_owner_mode - owner bypass must persist
     const localKeys = [...Object.keys(localStorage)];
     for (const key of localKeys) {
+      if (key === 'lag_owner_mode') continue; // Preserve owner mode
       const keyLower = key.toLowerCase();
       if (clearPatterns.some(pattern => keyLower.includes(pattern.toLowerCase()))) {
         console.log("[AUTH] Clearing localStorage key:", key);
@@ -199,7 +201,7 @@ const AuthProvider = ({ children }) => {
       }
     }
     
-    // Explicitly clear known keys
+    // Explicitly clear known keys (NOT lag_owner_mode)
     const explicitKeys = [
       'demoRunId', 'demoStarted', 'demoVoiceSelected', 'demoOnboardingStep',
       'demoProfile', 'isDemoMode', 'sampleVoice', 'voiceProfile',
@@ -213,6 +215,7 @@ const AuthProvider = ({ children }) => {
     console.log("[AUTH] resetDemoSession - AFTER", {
       isDemoMode: false,
       demoProfile: null,
+      ownerModePreserved: localStorage.getItem('lag_owner_mode'),
       localStorage: Object.keys(localStorage),
       sessionStorage: Object.keys(sessionStorage)
     });
