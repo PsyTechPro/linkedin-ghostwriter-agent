@@ -59,19 +59,22 @@ const DemoMode = () => {
       return;
     }
 
-    // Check for owner secret word
+    // Check for owner secret phrase (LAG_OWNER_ENABLE)
     if (checkOwnerSecret(topic)) {
       enableOwnerMode();
-      toast.success("🔓 Owner Mode activated! Unlimited demo access enabled for 30 days.", {
+      toast.success("🔓 Owner Mode activated! All demo limits bypassed.", {
         duration: 5000
       });
-      setTopic(""); // Clear the secret word
+      setTopic(""); // Clear the secret phrase
       return; // Don't generate posts, just activate owner mode
     }
 
     setGenerating(true);
     try {
       console.log("[Demo] Generating posts for topic:", topic, "hasDemoTrainedVoice:", hasDemoTrainedVoice, "isOwnerMode:", isOwnerMode);
+      
+      // Add owner mode header if active
+      const headers = isOwnerMode ? { 'X-LAG-Owner-Mode': 'true' } : {};
       
       let res;
       if (hasDemoTrainedVoice && demoProfile) {
@@ -81,7 +84,7 @@ const DemoMode = () => {
           topic, 
           audience: audience || null,
           profile: demoProfile
-        });
+        }, { headers });
       } else {
         // Use sample voice profile
         console.log("[Demo] Using sample voice profile");
