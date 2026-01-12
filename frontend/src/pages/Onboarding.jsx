@@ -211,14 +211,21 @@ const Onboarding = () => {
                 <Play className="w-4 h-4" />
                 <span className="font-medium text-sm">Demo Mode</span>
               </div>
-              <span className="text-slate-400 text-sm hidden sm:block">
-                {demoAttemptsRemaining !== null && demoAttemptsRemaining > 0 
-                  ? `${demoAttemptsRemaining} voice training${demoAttemptsRemaining === 1 ? '' : 's'} remaining`
-                  : demoAttemptsRemaining === 0 
-                    ? "Voice training limit reached"
-                    : "Posts won't be saved"
-                }
-              </span>
+              {/* Owner Mode Indicator - show unlimited when active */}
+              {isOwnerMode ? (
+                <span className="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">
+                  Owner Mode ON - Unlimited
+                </span>
+              ) : (
+                <span className="text-slate-400 text-sm hidden sm:block">
+                  {demoAttemptsRemaining !== null && demoAttemptsRemaining > 0 
+                    ? `${demoAttemptsRemaining} voice training${demoAttemptsRemaining === 1 ? '' : 's'} remaining`
+                    : demoAttemptsRemaining === 0 
+                      ? "Voice training limit reached"
+                      : "Posts won't be saved"
+                  }
+                </span>
+              )}
             </div>
             <button
               onClick={() => navigate("/auth")}
