@@ -31,7 +31,7 @@ const renderProfileValue = (value) => {
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { token, voiceProfile, updateVoiceProfile, isDemoMode, updateDemoProfile } = useAuth();
+  const { user, token, voiceProfile, updateVoiceProfile, isDemoMode, updateDemoProfile, isOwnerMode, enableOwnerMode, checkOwnerSecret } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [samplePosts, setSamplePosts] = useState("");
