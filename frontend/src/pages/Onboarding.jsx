@@ -62,7 +62,7 @@ const Onboarding = () => {
       }
     };
     checkDemoLimit();
-  }, [isDemoMode]);
+  }, [isDemoMode, isOwnerMode]);
 
   // Load sample data
   const loadSamplePosts = async () => {
