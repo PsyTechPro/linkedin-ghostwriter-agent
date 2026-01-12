@@ -91,7 +91,7 @@ const DemoMode = () => {
         res = await axios.post(`${API}/demo/generate`, { 
           topic, 
           audience: audience || null 
-        });
+        }, { headers });
       }
       
       console.log("[Demo] Response received:", res.data);
