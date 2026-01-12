@@ -173,6 +173,12 @@ const DemoMode = () => {
               <Play className="w-4 h-4" />
               <span className="font-medium text-sm">Demo Mode</span>
             </div>
+            {/* Owner Mode Indicator */}
+            {isOwnerMode && (
+              <span className="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">
+                Owner Mode ON
+              </span>
+            )}
             <span className="text-slate-400 text-sm hidden sm:block">
               Generate posts freely • Saving & favorites disabled
             </span>
