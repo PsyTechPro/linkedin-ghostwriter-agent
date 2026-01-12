@@ -439,6 +439,33 @@ const Settings = () => {
               </div>
             </motion.div>
           )}
+
+          {/* Owner Mode Section - only visible if owner mode is active */}
+          {isOwnerMode && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="card-ghost p-6 border-emerald-500/30"
+            >
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-emerald-400">🔓</span>
+                Owner Mode
+              </h2>
+              <p className="text-slate-400 text-sm mb-4">
+                Owner Mode is currently active. You have unlimited demo access.
+              </p>
+              <button
+                onClick={() => {
+                  disableOwnerMode();
+                  toast.success("Owner Mode disabled");
+                }}
+                className="text-sm text-slate-400 hover:text-red-400 transition-colors underline"
+              >
+                Turn off Owner Mode
+              </button>
+            </motion.div>
+          )}
         </div>
       </main>
     </div>
