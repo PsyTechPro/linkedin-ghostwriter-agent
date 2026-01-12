@@ -11,7 +11,7 @@ import { useAuth, API } from "../App";
 
 const DemoMode = () => {
   const navigate = useNavigate();
-  const { isDemoMode, demoProfile, enterDemoMode, exitDemoMode, hasDemoTrainedVoice, hardResetDemo } = useAuth();
+  const { isDemoMode, demoProfile, enterDemoMode, exitDemoMode, hasDemoTrainedVoice, hardResetDemo, isOwnerMode, enableOwnerMode, checkOwnerSecret } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
