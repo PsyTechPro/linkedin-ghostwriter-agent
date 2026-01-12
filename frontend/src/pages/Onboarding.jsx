@@ -49,10 +49,10 @@ const Onboarding = () => {
   const [generating, setGenerating] = useState(false);
   const [demoAttemptsRemaining, setDemoAttemptsRemaining] = useState(null);
 
-  // Check demo voice limit on mount
+  // Check demo voice limit on mount (skip if owner mode)
   useEffect(() => {
     const checkDemoLimit = async () => {
-      if (isDemoMode) {
+      if (isDemoMode && !isOwnerMode) {
         try {
           const res = await axios.get(`${API}/demo/voice-limit`);
           setDemoAttemptsRemaining(res.data.remaining);
